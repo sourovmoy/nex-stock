@@ -7,7 +7,7 @@ const Header = () => {
   return (
     <ScrollEffectWrapper>
       <div className="xl:px-20 lg:px-16 md:px-10 sm:px-6 px-4">
-        <div className="flex justify-between items-center py-1">
+        <div className="flex justify-between items-center">
           {/* left-navbar  */}
           <div className="flex items-center gap-3">
             <Logo height={40} width={100} />
