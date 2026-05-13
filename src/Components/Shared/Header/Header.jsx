@@ -10,7 +10,7 @@ const Header = () => {
         <div className="flex justify-between items-center">
           {/* left-navbar  */}
           <div className="flex items-center gap-3">
-            <Logo height={40} width={100} />
+            <Logo height={40} width={60} />
             <NavLink />
           </div>
           <div className="">actions</div>
