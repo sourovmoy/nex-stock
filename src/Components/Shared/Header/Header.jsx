@@ -6,7 +6,7 @@ import NavLink from "@/Components/Navlink/NavLink";
 const Header = () => {
   return (
     <ScrollEffectWrapper>
-      <div className="xl:px-20 lg:px-16 md:px-10 sm:px-6 px-4">
+      <div className="xl:px-20 lg:px-16 md:px-10 sm:px-6 px-4 py-2">
         <div className="flex justify-between items-center">
           {/* left-navbar  */}
           <div className="flex items-center gap-3">

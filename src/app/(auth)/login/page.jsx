@@ -4,6 +4,7 @@ import React from "react";
 import { GrUserWorker } from "react-icons/gr";
 import {
   MdOutlineAdminPanelSettings,
+  MdOutlineDeveloperMode,
   MdOutlineStorefront,
 } from "react-icons/md";
 
@@ -14,24 +15,36 @@ const Login = () => {
     { icon: <GrUserWorker size={24} />, name: "Staff" },
   ];
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
+    <div className="flex flex-col md:flex-row min-h-screen text-gray-400">
       {/* left div */}
       <div
         style={{
           backgroundImage: "url('/Gradient.jpg'), url('/background.png')",
         }}
-        className="bg-cover bg-center flex-1 relative p-2 md:p-10 flex flex-row md:flex-col  justify-between"
+        className="bg-cover bg-center flex-1 relative p-5 md:p-10 flex flex-row md:flex-col  justify-between"
       >
-        <div className="flex justify-baseline">
-          <Logo height={50} width={50} />
+        <div className="flex flex-col">
+          <div className="flex justify-baseline">
+            <Logo height={50} width={50} />
+          </div>
+          <div className="">
+            <h1 className="text-wrap text-xl md:text-4xl">
+              Master your <br /> inventory with <br /> precision.
+            </h1>
+          </div>
         </div>
-        <div className="flex justify-baseline w-50 h-25 backdrop-blur-sm shadow-md p-2 rounded-2xl ">
-          <p className="text-[10px] text-white">
-            NexStock POS transformed our warehouse efficiency by 40% within the
-            first quarter.
-            <br />
-            <span className="text-sm">Developed by Sourov Dash</span>
-          </p>
+
+        <div className="flex justify-baseline w-50 h-25 backdrop-blur-sm shadow-lg p-3 rounded-3xl ">
+          <div>
+            <p className="text-[10px]">
+              NexStock POS transformed our warehouse efficiency by 40% within
+              the first quarter.
+              <br />
+            </p>
+            <span className="text-sm mt-4 flex items-center">
+              <MdOutlineDeveloperMode /> Developed by Sourov Dash
+            </span>
+          </div>
         </div>
       </div>
       {/* Right div */}

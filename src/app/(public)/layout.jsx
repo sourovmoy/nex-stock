@@ -7,7 +7,7 @@ export default function MainLayout({ children }) {
       <header>
         <Header />
       </header>
-      <main className="mt-15">{children}</main>
+      <main className="mt-10">{children}</main>
       <footer>
         <Footer />
       </footer>
