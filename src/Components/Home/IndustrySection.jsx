@@ -59,7 +59,7 @@ const IndustrySection = () => {
               {item.title}
             </h3>
 
-            <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-grow">
+            <p className="text-gray-500 text-sm leading-relaxed mb-8 grow">
               {item.desc}
             </p>
 

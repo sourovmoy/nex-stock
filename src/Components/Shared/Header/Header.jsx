@@ -2,6 +2,7 @@ import React from "react";
 import ScrollEffectWrapper from "./ScrollEffectWrapper/ScrollEffectWrapper";
 import Logo from "../Logo/Logo";
 import NavLink from "@/Components/Navlink/NavLink";
+import Search from "../Search/Search";
 
 const Header = () => {
   return (
@@ -13,8 +14,10 @@ const Header = () => {
             <Logo height={40} width={60} />
             <NavLink />
           </div>
-          <div className="">actions</div>
           {/* right-navbar  */}
+          <div className="">
+            <Search />
+          </div>
         </div>
       </div>
     </ScrollEffectWrapper>
