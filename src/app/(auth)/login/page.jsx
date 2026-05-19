@@ -1,5 +1,6 @@
 import LoginForm from "@/Components/LoginForm/LoginForm";
 import Logo from "@/Components/Shared/Logo/Logo";
+import SignInButtons from "@/Components/SignInButtons/SignInButtons";
 import React from "react";
 import { GrUserWorker } from "react-icons/gr";
 import {
@@ -8,7 +9,7 @@ import {
   MdOutlineStorefront,
 } from "react-icons/md";
 
-const Login = () => {
+const Login = async () => {
   const roles = [
     { icon: <MdOutlineStorefront size={24} />, name: "Vendor" },
     { icon: <MdOutlineAdminPanelSettings size={24} />, name: "Admin" },
@@ -68,6 +69,7 @@ const Login = () => {
               ))}
             </div>
           </div>
+          <SignInButtons />
           <LoginForm />
         </div>
       </div>

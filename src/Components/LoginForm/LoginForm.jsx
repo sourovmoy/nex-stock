@@ -7,7 +7,7 @@ const LoginForm = () => {
     e.preventDefault();
   };
   return (
-    <form onSubmit={handelSubmit} className="pt-6">
+    <form onSubmit={handelSubmit} className=" pt-6">
       <div className="space-y-3">
         {/* Email Field */}
         <div className="flex flex-col space-y-1">
