@@ -20,7 +20,7 @@ const Login = async () => {
       {/* left div */}
       <div
         style={{
-          backgroundImage: "url('/Gradient.jpg'), url('/background.png')",
+          backgroundImage: "url('/Gradient.png'), url('/background.png')",
         }}
         className="bg-cover bg-center flex-1 relative p-5 md:p-10 flex flex-row md:flex-col  justify-between"
       >

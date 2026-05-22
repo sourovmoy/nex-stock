@@ -113,6 +113,9 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+.btn {
+  @apply px-4 py-2 rounded-md border shadow-sm transition;
+}
 
 @layer base {
   * {

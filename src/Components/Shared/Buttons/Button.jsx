@@ -8,7 +8,7 @@ const Button = ({
 }) => {
   // 1. Base styles that every button will have
   const baseStyles =
-    "px-6 py-3 font-bold rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center gap-2";
+    "px-4 py-2 font-bold rounded-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2";
 
   // 2. Variants for common POS actions (Vendor, Admin, Staff styles)
   const variants = {
