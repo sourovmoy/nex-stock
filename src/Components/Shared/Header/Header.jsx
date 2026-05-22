@@ -5,8 +5,12 @@ import NavLink from "@/Components/Navlink/NavLink";
 import Search from "../Search/Search";
 import Notification from "@/Components/Notification/Notification";
 import HeadersBtn from "./HeadersBtn";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/authOptions";
 
 const Header = () => {
+  // const user = getServerSession(authOptions) > JSON.stringify();
+
   return (
     <ScrollEffectWrapper>
       <div className="md:px-14 sm:px-6 px-4 py-2">

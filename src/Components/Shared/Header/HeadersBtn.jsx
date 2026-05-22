@@ -1,19 +1,27 @@
 "use client";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import React from "react";
 
 const HeadersBtn = () => {
-  const handelClick = () => {};
+  const data = useSession();
+  console.log(data);
+
   return (
-    <div className="flex gap-2">
-      <button className="btn bg-indigo-700 text-white">New Orders</button>
-      <button
-        onClick={() => signOut({ callbackUrl: "/login" })}
-        className="btn"
-      >
-        Logout
-      </button>
-    </div>
+    <>
+      {data.status === "authenticated" ? (
+        <div className="flex gap-2">
+          <button className="btn bg-indigo-700 text-white">New Orders</button>
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="btn"
+          >
+            Logout
+          </button>
+        </div>
+      ) : (
+        "no user"
+      )}
+    </>
   );
 };
 

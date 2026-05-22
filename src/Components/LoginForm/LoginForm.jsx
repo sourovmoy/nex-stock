@@ -2,6 +2,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import Swal from "sweetalert2";
 
 const LoginForm = () => {
   const router = useRouter();
@@ -21,9 +22,17 @@ const LoginForm = () => {
         email,
         password,
       });
+      console.log(result);
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError(result?.error);
+        Swal.fire({
+          position: "top-end",
+          icon: "error",
+          title: `${error}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
       } else {
         router.push("/");
         router.refresh();
@@ -47,7 +56,6 @@ const LoginForm = () => {
             Please enter your details to sign in
           </p>
         </div>
-
         {/* Form Fields */}
         <div className="space-y-4">
           {/* Email Field */}
@@ -91,15 +99,13 @@ const LoginForm = () => {
           </div>
         </div>
 
-        {/* Error Message Section */}
-        {error && (
+        {/* {error && (
           <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-md">
             <p className="text-sm text-red-600 dark:text-red-400 text-center font-medium">
               {error}
             </p>
           </div>
-        )}
-
+        )} */}
         {/* Submit Button */}
         <button
           type="submit"
