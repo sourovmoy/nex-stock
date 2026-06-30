@@ -18,10 +18,12 @@ const Header = () => {
           {/* left-navbar  */}
           <div className="flex items-center gap-3">
             <Logo height={40} width={60} />
-            <NavLink />
+            <div className="hidden md:flex gap-3">
+              <NavLink />
+            </div>
           </div>
           {/* right-navbar  */}
-          <div className=" flex justify-center items-center gap-3">
+          <div className="relative flex justify-center items-center gap-3">
             <Search />
             <Notification />
             <HeadersBtn />

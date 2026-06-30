@@ -1,21 +1,21 @@
 "use client";
 import { Button, Dialog, DialogPanel } from "@headlessui/react";
 import React, { useState } from "react";
-import { FaRegBell, FaSearch } from "react-icons/fa";
+import { FaRegBell } from "react-icons/fa";
 
 const Notification = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div>
-      <Button onClick={() => setIsOpen(!isOpen)} className="">
-        <FaRegBell size={19} />
+    <div className="">
+      <Button onClick={() => setIsOpen(!isOpen)} className="mt-2">
+        <FaRegBell size={20} />
       </Button>
 
       <Dialog
         open={isOpen}
         as="div"
-        className="relative z-50 focus:outline-none"
+        className="z-50 focus:outline-none"
         onClose={() => setIsOpen(false)}
       >
         <div className="fixed inset-0 z-50 w-screen overflow-y-auto md:pr-20">

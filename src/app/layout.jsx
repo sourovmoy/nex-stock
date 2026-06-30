@@ -16,7 +16,12 @@ export default function RootLayout({ children }) {
   return (
     <AuthProvider>
       <html lang="en" className={`${roboto.variable}  h-full antialiased`}>
-        <body className="min-h-full flex flex-col">{children}</body>
+        <body
+          className="min-h-full flex flex-col"
+          suppressHydrationWarning={true}
+        >
+          {children}
+        </body>
       </html>
     </AuthProvider>
   );

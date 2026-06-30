@@ -114,7 +114,7 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 .btn {
-  @apply px-4 py-2 rounded-md border shadow-sm transition;
+  @apply px-2 py-1 rounded-md border shadow-sm transition;
 }
 
 @layer base {
@@ -127,4 +127,8 @@
   html {
     @apply font-sans;
   }
+}
+
+html {
+  scrollbar-gutter: stable;
 }

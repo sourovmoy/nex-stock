@@ -1,25 +1,38 @@
 "use client";
+import HeaderSkeleton from "@/Components/Skeleton/HeaderSkeleton";
+import UserModal from "@/Components/UserModal/UserModal";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import React from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { FaRegUserCircle } from "react-icons/fa";
 
 const HeadersBtn = () => {
   const data = useSession();
-  console.log(data);
 
   return (
     <>
-      {data.status === "authenticated" ? (
+      {data.status === "loading" ? (
+        <div>
+          <HeaderSkeleton />
+        </div>
+      ) : data.status === "authenticated" ? (
         <div className="flex gap-2">
-          <button className="btn bg-indigo-700 text-white">New Orders</button>
+          <button className="hidden sm:block btn bg-indigo-700 text-white">
+            New Orders
+          </button>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="btn"
+            className="hidden sm:block btn"
           >
             Logout
           </button>
+          <UserModal />
         </div>
       ) : (
-        "no user"
+        <Link className="btn" href={"login"}>
+          Login
+        </Link>
       )}
     </>
   );

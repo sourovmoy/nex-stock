@@ -39,8 +39,6 @@ export const authOptions = {
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       try {
-        console.log({ user, account, profile, email, credentials });
-
         const newUser = {
           ...user,
           provider: account.provider,
