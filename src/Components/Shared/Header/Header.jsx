@@ -13,7 +13,7 @@ const Header = () => {
 
   return (
     <ScrollEffectWrapper>
-      <div className="md:px-14 sm:px-6 px-4 py-2">
+      <div className="md:px-14 sm:px-6 px-4 py-2 bg-blue-50">
         <div className="flex justify-between items-center">
           {/* left-navbar  */}
           <div className="flex items-center gap-3">

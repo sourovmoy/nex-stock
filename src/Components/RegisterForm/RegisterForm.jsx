@@ -7,27 +7,28 @@ import Swal from "sweetalert2";
 const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const form = e.target;
+      const formData = {
+        name: form.name.value,
+        email: form.email.value,
+        contactNo: form.contactNo.value,
+        password: form.password.value,
+        image:
+          form.image.value ||
+          "https://i.ibb.co.com/xKfkjxLY/pngtree-user-vector-avatar-png-image-1541962.jpg",
+      };
 
-    const form = e.target;
-
-    const formData = {
-      name: form.name.value,
-      email: form.email.value,
-      contactNo: form.contactNo.value,
-      password: form.password.value,
-      image:
-        form.image.value ||
-        "https://i.ibb.co.com/xKfkjxLY/pngtree-user-vector-avatar-png-image-1541962.jpg",
-    };
-
-    const data = await postUser(formData);
-    if (data.acknowledged === true) {
-      Swal.fire({
-        icon: "success",
-        draggable: true,
-      });
-      form.reset();
-    } else {
+      const data = await postUser(formData);
+      if (data.acknowledged === true) {
+        Swal.fire({
+          icon: "success",
+          draggable: true,
+        });
+        // form.reset();
+      }
+    } catch (error) {
+      console.log("error form", error);
       Swal.fire({
         icon: "warning",
         draggable: true,

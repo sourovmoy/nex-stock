@@ -4,7 +4,7 @@ import Logo from "../Logo/Logo";
 
 const Footer = () => {
   return (
-    <footer className="pt-20 pb-10 px-6 border-t border-gray-100 max-w-7xl mx-auto">
+    <footer className="pt-20 pb-10 px-8 border-t border-gray-100 bg-blue-100">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
         {/* Brand Info */}
         <div className="col-span-1">
