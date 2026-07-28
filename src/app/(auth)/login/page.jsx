@@ -45,8 +45,8 @@ const Login = async () => {
       {/* Right div */}
       <div className="flex justify-center items-center flex-1 ">
         <div className="w-100 h-auto bg-gray-100 p-4 rounded-sm">
-          <h2 className="text-4xl font-bold">Welcome Back</h2>
-          <h2 className="text-gray-500">
+          <h2 className="text-4xl font-bold text-center">Welcome Back</h2>
+          <h2 className="text-gray-500 text-center">
             Log in to manage your inventory and transactions.
           </h2>
           <LoginForm />
