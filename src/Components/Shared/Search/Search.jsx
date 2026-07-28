@@ -10,7 +10,6 @@ const Search = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const data = useSession();
-  console.log(data);
 
   const handelSubmit = (e) => {
     const value = e.target.value;

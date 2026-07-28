@@ -6,22 +6,14 @@ import Link from "next/link";
 import React from "react";
 
 const HeadersBtn = () => {
-  const data = useSession();
+  const { data: session, status } = useSession();
+
   return (
     <>
-      {data.status === "loading" ? (
-        <div>
-          {data.data === undefined ? (
-            <p className="hidden sm:block h-8 w-14 rounded-md bg-gray-200 animate-pulse"></p>
-          ) : (
-            <HeaderSkeleton />
-          )}
-        </div>
-      ) : data.status === "authenticated" ? (
+      {status === "loading" ? (
+        <HeaderSkeleton />
+      ) : status === "authenticated" ? (
         <div className="flex gap-2">
-          <button className="hidden sm:block btn bg-indigo-700 text-white">
-            New Orders
-          </button>
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
             className="hidden sm:block btn"
@@ -31,9 +23,14 @@ const HeadersBtn = () => {
           <UserModal />
         </div>
       ) : (
-        <Link className="btn" href={"/login"}>
-          Login
-        </Link>
+        <div className="flex gap-2 justify-center items-center">
+          <Link className="btn" href={"/login"}>
+            Login
+          </Link>
+          <div className="w-10 h-10 rounded-full bg-indigo-500 text-white font-bold flex items-center justify-center">
+            U
+          </div>
+        </div>
       )}
     </>
   );

@@ -7,7 +7,6 @@ import { useState } from "react";
 
 const UserModal = () => {
   const { data } = useSession();
-  console.log(data);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -18,11 +17,10 @@ const UserModal = () => {
           <Image
             src={data?.user?.image}
             alt={data?.user?.name}
-            height={35}
-            width={35}
-            className="rounded-full outline-4"
-            placeholder="blur"
-            blurDataURL="..."
+            height={33}
+            width={33}
+            className="rounded-full outline-2 w-10 h-10"
+            referrerPolicy="no-referrer"
           />
         ) : (
           <div className="w-10 h-10 rounded-full bg-indigo-500 text-white font-bold flex items-center justify-center">
