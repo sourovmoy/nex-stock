@@ -1,7 +1,7 @@
 import HeroSection from "@/Components/Home/HeroSection";
 import IndustrySection from "@/Components/Home/IndustrySection";
-import Pricing from "@/Components/Home/Pricing";
 import React from "react";
+import Pricing from "../pricing/page";
 
 const Home = () => {
   return (

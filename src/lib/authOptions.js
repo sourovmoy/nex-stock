@@ -1,4 +1,3 @@
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { collections, dbConnect } from "./dbConnect";
 import bcrypt from "bcryptjs";
@@ -24,6 +23,7 @@ export const authOptions = {
         return {
           id: user._id.toString(),
           name: user.name,
+          image: user.image,
           email: user.email,
           role: user.role,
         };
@@ -31,16 +31,14 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn({ user, account }) {
       try {
-        const query = { email: user.email };
         const usersCollection = await dbConnect(collections.USERS);
-        const isUser = await usersCollection.findOne(query);
+        const isUser = await usersCollection.findOne({ email: user.email });
+
         if (!isUser) {
           const newUser = {
             ...user,
-            provider: account.provider,
-            providerId: account.providerAccountId,
             role: "staff",
             createdAt: new Date().toISOString(),
           };
@@ -48,6 +46,7 @@ export const authOptions = {
           user.role = "staff";
         } else {
           user.role = isUser.role;
+          user.image = isUser.image;
         }
         return true;
       } catch (error) {
@@ -55,18 +54,17 @@ export const authOptions = {
         return false;
       }
     },
-    // async redirect({ url, baseUrl }) {
-    //   return baseUrl;
-    // },
-    async session({ session, token, user }) {
-      session.user.role = token.role;
-      return session;
-    },
-    async jwt({ token, user, account, profile, isNewUser }) {
+    async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
+        token.image = user.image;
       }
       return token;
+    },
+    async session({ session, token }) {
+      session.user.role = token.role;
+      session.user.image = token.image;
+      return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

@@ -1,7 +1,14 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-const publicRoutePrefixes = ["/login", "/api/auth"];
+const publicRoutePrefixes = [
+  "/login",
+  "/api/auth",
+  "/features",
+  "/solutions",
+  "/pricing",
+  "/home",
+];
 const adminRoutePrefixes = ["/register"];
 
 export async function proxy(request: NextRequest) {
@@ -31,7 +38,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  return NextResponse.next();
+  // return NextResponse.next();
 }
 
 export const config = {

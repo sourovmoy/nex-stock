@@ -13,7 +13,7 @@ function CellValue({ value }) {
 
 export default function ComparisonTable({ rows }) {
   return (
-    <section className="px-6 mb-20">
+    <section className="mb-20">
       <h2 className="text-2xl font-semibold mb-8">Plan comparison</h2>
       <div className="border border-gray-100 rounded-2xl overflow-hidden">
         <table className="w-full text-sm">

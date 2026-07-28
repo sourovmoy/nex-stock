@@ -18,7 +18,7 @@ export default function PlanCards({ plans }) {
   };
 
   return (
-    <section className="px-6 mb-20">
+    <section className="mb-20">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {plans.map((plan) => {
           const price = getPrice(plan);

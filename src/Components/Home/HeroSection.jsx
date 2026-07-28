@@ -5,7 +5,7 @@ import Button from "../Shared/Buttons/Button";
 
 const HeroSection = () => {
   return (
-    <div className="max-w-4xl mx-auto flex flex-col-reverse md:flex-row justify-between items-center py-15 mt-5 px-5 md:px-0 gap-10 md:gap-1">
+    <div className="max-w-4xl mx-auto flex flex-col-reverse md:flex-row justify-between items-center py-15 mt-15 px-5 md:px-0 gap-10 md:gap-1">
       <div className="flex-1 max-w-xl mx-auto space-y-8">
         <h2 className="text-3xl font-medium text-gray-700">
           Master Your Inventory with Precision.

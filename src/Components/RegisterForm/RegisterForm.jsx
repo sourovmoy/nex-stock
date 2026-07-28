@@ -10,6 +10,7 @@ const RegisterForm = () => {
       const form = e.target;
       const formData = {
         name: form.name.value,
+        phone: form.contactNo.value,
         email: form.email.value,
         password: form.password.value,
         image: form.image.value || null,
@@ -67,7 +68,7 @@ const RegisterForm = () => {
 
           {/* Contact No + Password */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* <div className="flex flex-col space-y-1">
+            <div className="flex flex-col space-y-1">
               <label>Contact Number</label>
               <input
                 type="tel"
@@ -76,7 +77,7 @@ const RegisterForm = () => {
                 required
                 className={inputClass}
               />
-            </div> */}
+            </div>
 
             <div className="flex flex-col space-y-1">
               <label>Password</label>

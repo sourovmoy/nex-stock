@@ -11,7 +11,7 @@ import React from "react";
 const Pricing = () => {
   return (
     <Container>
-      <main className="bg-white text-gray-900">
+      <main className="text-gray-900">
         <PricingHero />
 
         {/* Client island: toggle owns state, PlanCards listens via custom event */}

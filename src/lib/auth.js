@@ -1,9 +1,18 @@
 "use server";
+import { getServerSession } from "next-auth";
 import { collections, dbConnect } from "./dbConnect";
 import bcrypt from "bcryptjs";
+import { authOptions } from "./authOptions";
 
 export const postUser = async (payload) => {
   try {
+    const session = getServerSession(authOptions);
+    if (!session || session.user.role !== "admin") {
+      return {
+        success: false,
+        message: "Unauthorized: Only admin can register users",
+      };
+    }
     const usersCollection = await dbConnect(collections.USERS);
     const email = { email: payload.email };
     const user = await usersCollection.findOne(email);
@@ -17,7 +26,7 @@ export const postUser = async (payload) => {
     const newUser = {
       name: payload.name,
       email: payload.email,
-      contactNo: payload.contactNo,
+      contactNo: payload.phone,
       image: payload.image,
       encryptPass,
       role: "staff",

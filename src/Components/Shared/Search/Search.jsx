@@ -9,7 +9,8 @@ import { RxCross2 } from "react-icons/rx";
 const Search = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const { data } = useSession();
+  const data = useSession();
+  console.log(data);
 
   const handelSubmit = (e) => {
     const value = e.target.value;
@@ -28,11 +29,13 @@ const Search = () => {
         className="absolute z-50 focus:outline-none"
         onClose={() => setIsOpen(false)}
       >
-        <div className={`fixed inset-0 z-50 w-screen overflow-y-auto sm:pr-90`}>
+        <div
+          className={`fixed inset-0 z-50 w-screen overflow-y-auto ${data.status === "authenticated" ? "sm:pr-95" : "sm:pr-58"}`}
+        >
           <div className="flex min-w-full justify-center md:justify-end">
             <DialogPanel
               transition
-              className="w-full sm:w-2/3 md:w-full max-w-sm rounded-sm bg-gray-200 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 h-10 mt-15 sm:mt-2"
+              className="w-full sm:w-2/3 md:w-full max-w-sm rounded-sm bg-gray-200 duration-300 ease-out data-closed:transform-[scale(95%)] data-closed:opacity-0 h-10 mt-20 sm:mt-7"
             >
               <div className="flex justify-between items-center">
                 <div className="flex-1 flex items-center gap-2 px-5 pt-2">

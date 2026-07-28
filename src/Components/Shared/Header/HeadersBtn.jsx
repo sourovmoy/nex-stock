@@ -4,17 +4,18 @@ import UserModal from "@/Components/UserModal/UserModal";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
-import { FaRegUserCircle } from "react-icons/fa";
 
 const HeadersBtn = () => {
   const data = useSession();
-
   return (
     <>
       {data.status === "loading" ? (
         <div>
-          <HeaderSkeleton />
+          {data.data === undefined ? (
+            <p className="hidden sm:block h-8 w-14 rounded-md bg-gray-200 animate-pulse"></p>
+          ) : (
+            <HeaderSkeleton />
+          )}
         </div>
       ) : data.status === "authenticated" ? (
         <div className="flex gap-2">
@@ -30,7 +31,7 @@ const HeadersBtn = () => {
           <UserModal />
         </div>
       ) : (
-        <Link className="btn" href={"login"}>
+        <Link className="btn" href={"/login"}>
           Login
         </Link>
       )}

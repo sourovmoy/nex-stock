@@ -12,7 +12,7 @@ const NavLink = () => {
   const normalizedPathname = normalizePath(pathname || "/");
 
   const navLinks = [
-    { href: "/", label: "Home" },
+    { href: "/home", label: "Home" },
     { href: "/features", label: "Features" },
     { href: "/solutions", label: "Solutions" },
     { href: "/pricing", label: "Pricing" },
@@ -28,7 +28,7 @@ const NavLink = () => {
             key={link.href}
             className={`transition-colors ${
               isActive
-                ? "text-primary font-semibold border-b-2"
+                ? "text-primary font-semibold border-b-2 border-gray-500"
                 : "text-gray-600 hover:text-primary"
             }`}
           >
