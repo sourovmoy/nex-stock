@@ -22,7 +22,6 @@ const LoginForm = () => {
         email,
         password,
       });
-      console.log(result);
 
       if (result?.error) {
         setError(result?.error);
@@ -49,9 +48,6 @@ const LoginForm = () => {
       <div className="space-y-3">
         {/* Header Title */}
         <div className="space-y-1 text-center sm:text-left">
-          <h1 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Welcome Back
-          </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Please enter your details to sign in
           </p>
@@ -99,13 +95,13 @@ const LoginForm = () => {
           </div>
         </div>
 
-        {/* {error && (
+        {error && (
           <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-md">
             <p className="text-sm text-red-600 dark:text-red-400 text-center font-medium">
               {error}
             </p>
           </div>
-        )} */}
+        )}
         {/* Submit Button */}
         <button
           type="submit"

@@ -5,10 +5,6 @@ import bcrypt from "bcryptjs";
 
 export const authOptions = {
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -20,39 +16,38 @@ export const authOptions = {
         const usersCollection = await dbConnect(collections.USERS);
         const user = await usersCollection.findOne({ email });
 
-        if (!user) {
-          return {
-            message: "No users",
-            results: null,
-          };
-        }
+        if (!user) return null;
         const isMatch = await bcrypt.compare(password, user.encryptPass);
 
-        if (!isMatch) {
-          return null;
-        }
+        if (!isMatch) return null;
 
-        return user;
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
       },
     }),
   ],
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
       try {
-        const newUser = {
-          ...user,
-          provider: account.provider,
-          providerId: account.providerAccountId,
-          role: "user",
-          createdAt: new Date().toISOString(),
-        };
         const query = { email: user.email };
         const usersCollection = await dbConnect(collections.USERS);
         const isUser = await usersCollection.findOne(query);
-
         if (!isUser) {
-          const createUser = await usersCollection.insertOne(newUser);
-          return true;
+          const newUser = {
+            ...user,
+            provider: account.provider,
+            providerId: account.providerAccountId,
+            role: "staff",
+            createdAt: new Date().toISOString(),
+          };
+          await usersCollection.insertOne(newUser);
+          user.role = "staff";
+        } else {
+          user.role = isUser.role;
         }
         return true;
       } catch (error) {

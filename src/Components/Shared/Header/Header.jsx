@@ -9,7 +9,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 
 const Header = () => {
-  // const user = getServerSession(authOptions) > JSON.stringify();
+  // const user = getServerSession(authOptions).JSON.stringify();
+  // console.log(user);
 
   return (
     <ScrollEffectWrapper>

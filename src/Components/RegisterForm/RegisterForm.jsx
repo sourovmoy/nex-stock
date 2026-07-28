@@ -1,5 +1,4 @@
 "use client";
-
 import { postUser } from "@/lib/auth";
 import Container from "../Container/Container";
 import Swal from "sweetalert2";
@@ -12,11 +11,8 @@ const RegisterForm = () => {
       const formData = {
         name: form.name.value,
         email: form.email.value,
-        contactNo: form.contactNo.value,
         password: form.password.value,
-        image:
-          form.image.value ||
-          "https://i.ibb.co.com/xKfkjxLY/pngtree-user-vector-avatar-png-image-1541962.jpg",
+        image: form.image.value || null,
       };
 
       const data = await postUser(formData);
@@ -71,7 +67,7 @@ const RegisterForm = () => {
 
           {/* Contact No + Password */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col space-y-1">
+            {/* <div className="flex flex-col space-y-1">
               <label>Contact Number</label>
               <input
                 type="tel"
@@ -80,7 +76,7 @@ const RegisterForm = () => {
                 required
                 className={inputClass}
               />
-            </div>
+            </div> */}
 
             <div className="flex flex-col space-y-1">
               <label>Password</label>

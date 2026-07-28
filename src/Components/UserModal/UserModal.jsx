@@ -7,20 +7,27 @@ import { useState } from "react";
 
 const UserModal = () => {
   const { data } = useSession();
+
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
       <Button onClick={() => setIsOpen(!isOpen)}>
-        <Image
-          src={data?.user?.image}
-          alt={data?.user?.name}
-          height={40}
-          width={40}
-          className="rounded-full outline-4"
-          placeholder="blur"
-          blurDataURL="..."
-        />
+        {data?.user?.image ? (
+          <Image
+            src={data?.user?.image}
+            alt={data?.user?.name}
+            height={40}
+            width={40}
+            className="rounded-full outline-4"
+            placeholder="blur"
+            blurDataURL="..."
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-indigo-500 text-white font-bold flex items-center justify-center">
+            {data.user.name ? data.user.name.charAt(0).toUpperCase() : "U"}
+          </div>
+        )}
       </Button>
 
       <Dialog
