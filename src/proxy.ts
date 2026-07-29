@@ -35,7 +35,7 @@ export async function proxy(request: NextRequest) {
   );
 
   if (isAdminRoute && token.role !== "admin") {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/home", request.url));
   }
 
   // return NextResponse.next();
