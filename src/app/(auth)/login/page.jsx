@@ -1,12 +1,10 @@
 import LoginForm from "@/Components/LoginForm/LoginForm";
 import Logo from "@/Components/Shared/Logo/Logo";
+import Link from "next/link";
 import React from "react";
+import { CiHome } from "react-icons/ci";
 import { GrUserWorker } from "react-icons/gr";
-import {
-  MdOutlineAdminPanelSettings,
-  MdOutlineDeveloperMode,
-  MdOutlineStorefront,
-} from "react-icons/md";
+import { MdOutlineDeveloperMode } from "react-icons/md";
 
 const Login = async () => {
   return (
@@ -45,6 +43,12 @@ const Login = async () => {
       {/* Right div */}
       <div className="flex justify-center items-center flex-1 ">
         <div className="w-100 h-auto bg-gray-100 p-4 rounded-sm">
+          <Link
+            href={"/home"}
+            className="flex items-center gap-2 text-gray-700"
+          >
+            <CiHome color="black" /> Go to home
+          </Link>
           <h2 className="text-4xl font-bold text-center">Welcome Back</h2>
           <h2 className="text-gray-500 text-center">
             Log in to manage your inventory and transactions.
