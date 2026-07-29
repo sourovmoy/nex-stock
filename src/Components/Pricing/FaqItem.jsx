@@ -8,7 +8,7 @@ export default function FaqItem({ q, a }) {
 
   return (
     <div
-      className="border border-gray-100 rounded-2xl overflow-hidden cursor-pointer hover:border-gray-200 transition-colors"
+      className="border border-gray-100 rounded-2xl overflow-hidden cursor-pointer hover:border-gray-200 transition-colors shadow-sm"
       onClick={() => setOpen(!open)}
     >
       <div className="flex justify-between items-center px-5 py-4 text-sm font-medium text-gray-800">
