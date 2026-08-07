@@ -30,7 +30,7 @@ export const postUser = async (payload) => {
       contactNo: payload.phone,
       image: payload.image,
       encryptPass,
-      role: "staff",
+      role: "member",
       date: new Date().toISOString(),
     };
     const results = await usersCollection.insertOne(newUser);

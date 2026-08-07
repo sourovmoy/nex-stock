@@ -7,17 +7,18 @@ import Notification from "@/Components/Notification/Notification";
 import HeadersBtn from "./HeadersBtn";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+import LinksModal from "@/Components/Header/LinksModal";
 
 const Header = () => {
-  // const user = getServerSession(authOptions).JSON.stringify();
-  // console.log(user);
-
   return (
     <ScrollEffectWrapper>
       <div className="">
         <div className="flex justify-between items-center">
           {/* left-navbar  */}
           <div className="flex items-center gap-3">
+            <div>
+              <LinksModal />
+            </div>
             <Logo height={40} width={60} />
             <div className="hidden md:flex gap-3">
               <NavLink />

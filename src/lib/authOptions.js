@@ -39,11 +39,11 @@ export const authOptions = {
         if (!isUser) {
           const newUser = {
             ...user,
-            role: "staff",
+            role: "member",
             createdAt: new Date().toISOString(),
           };
           await usersCollection.insertOne(newUser);
-          user.role = "staff";
+          user.role = "member";
         } else {
           user.role = isUser.role;
           user.image = isUser.image;

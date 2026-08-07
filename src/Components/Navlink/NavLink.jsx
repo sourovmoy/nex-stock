@@ -28,7 +28,7 @@ const NavLink = () => {
             key={link.href}
             className={`transition-colors ${
               isActive
-                ? "text-primary font-semibold border-b-2 border-gray-500"
+                ? "text-primary font-semibold"
                 : "text-gray-600 hover:text-primary"
             }`}
           >
