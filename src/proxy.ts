@@ -38,7 +38,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
-  // return NextResponse.next();
+  return NextResponse.next();
 }
 
 export const config = {

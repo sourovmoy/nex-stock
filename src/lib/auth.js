@@ -6,7 +6,8 @@ import { authOptions } from "./authOptions";
 
 export const postUser = async (payload) => {
   try {
-    const session = getServerSession(authOptions);
+    const session = await getServerSession(authOptions);
+
     if (!session || session.user.role !== "admin") {
       return {
         success: false,
