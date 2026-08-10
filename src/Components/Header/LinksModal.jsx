@@ -5,7 +5,6 @@ import MenuModal from "./MenuModal";
 
 const LinksModal = () => {
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
-  console.log(isMenuModalOpen);
 
   return (
     <div className="relative flex items-center gap-10">

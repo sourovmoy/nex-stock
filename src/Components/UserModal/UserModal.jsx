@@ -6,9 +6,12 @@ import { Button, Dialog, DialogPanel } from "@headlessui/react";
 import { useState } from "react";
 import { LayoutDashboard, LogOut, X } from "lucide-react";
 import Link from "next/link";
+import Loading from "../Loading/Loading";
 
 const UserModal = () => {
-  const { data } = useSession();
+  const { data, status } = useSession();
+
+  const userRole = data?.user?.role;
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -41,7 +44,7 @@ const UserModal = () => {
           <div className="flex justify-end mt-0 sm:mt-20">
             <DialogPanel
               transition
-              className="w-2/3 md:w-90 border-r border-gray-100 bg-white shadow-2xl z-50 animate-in slide-in-from-right duration-300"
+              className="w-2/3 md:w-90 border-r border-gray-100 bg-white sm:bg-blue-100 shadow-2xl z-50 animate-in slide-in-from-right duration-300 rounded-md"
             >
               <div className=" flex flex-col justify-between  h-screen sm:h-50">
                 <div className="flex items-center justify-between border-b border-gray-400">
@@ -87,7 +90,11 @@ const UserModal = () => {
                 <div className="flex-1">
                   <div className="py-1.5">
                     <Link
-                      href="/dashboard"
+                      href={
+                        userRole === "admin"
+                          ? "/dashboard/admin"
+                          : "/dashboard/user"
+                      }
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                     >

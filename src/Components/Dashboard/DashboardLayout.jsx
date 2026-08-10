@@ -1,44 +1,60 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import Sidebar from "./Drawer/Sidebar";
+import { FiMenu, FiUser } from "react-icons/fi";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 const DashboardLayout = ({ children }) => {
+  const session = useSession();
+  console.log(session);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <div>
-      <div className="min-h-screen bg-white">
-        <div className="flex min-h-screen">
-          {/* Mobile Sidebar Overlay */}
-          {/* {sidebarOpen && (
-            <div
-              className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-            />
-          )} */}
+    <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/* Sidebar */}
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-          {/* Sidebar */}
-          <div
-            className={`
-          fixed z-50 inset-y-0 left-0 transform bg-white transition-transform duration-300
-          lg:static lg:translate-x-0
-          
-        `}
+      {/* Main area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Header */}
+        <header className="flex items-center justify-between px-4 sm:px-6 h-14 bg-green-100 border-b border-gray-100 shrink-0">
+          {/* Hamburger — mobile only */}
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden text-gray-500 hover:text-[#244B43] transition-colors"
+            aria-label="Open menu"
           >
-            {/* <Sidebar navItems={navItems} user={session.user} /> */}
-            sidebar
-          </div>
+            <FiMenu size={22} />
+          </button>
 
-          {/* Content Area */}
-          <div className="flex-1 flex flex-col min-h-screen w-full">
-            {/* Header */}
-            {/* <Header
-              session={session}
-              onMenuClick={() => setSidebarOpen(true)}
-            /> */}
-            header
-            {/* Page Content */}
-            <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-white">
-              {children}
-            </main>
+          {/* Page title — desktop */}
+          <span className="hidden lg:block text-sm font-semibold text-gray-700">
+            Dashboard
+          </span>
+
+          {/* Right side */}
+          <div className="relative flex items-center gap-3 ml-auto">
+            <div className="w-8 h-8 rounded-full bg-[#244B43]/10 flex items-center justify-center">
+              {session.status === "loading" ? (
+                <FiUser size={15} className="text-[#244B43]" />
+              ) : session?.status === "authenticated" ? (
+                <Image
+                  height={24}
+                  width={24}
+                  src={session?.data?.user?.image}
+                  alt={session?.data?.user.name}
+                  className="rounded-full outline-3 outline-gray-500 h-6 w-6"
+                />
+              ) : (
+                <FiUser size={15} className="text-[#244B43]" />
+              )}
+            </div>
           </div>
-        </div>
+        </header>
+
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6">{children}</main>
       </div>
     </div>
   );

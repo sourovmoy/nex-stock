@@ -1,7 +1,19 @@
+import { authOptions } from "@/lib/authOptions";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 import React from "react";
 
-const Dashboard = () => {
-  return <div>this is daaashboard</div>;
+const DashboardPage = async () => {
+  const session = await getServerSession(authOptions);
+  console.log(session);
+
+  if (!session) redirect("/login");
+
+  const role = session?.user?.role;
+  console.log(role);
+
+  if (role === "member") redirect("/dashboard/user");
+  if (role === "admin") redirect("/dashboard/admin");
 };
 
-export default Dashboard;
+export default DashboardPage;
