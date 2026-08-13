@@ -1,12 +1,10 @@
 "use client";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React from "react";
 import { Button, Dialog, DialogPanel } from "@headlessui/react";
 import { useState } from "react";
 import { LayoutDashboard, LogOut, X } from "lucide-react";
 import Link from "next/link";
-import Loading from "../Loading/Loading";
 
 const UserModal = () => {
   const { data, status } = useSession();

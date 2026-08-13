@@ -2,7 +2,7 @@ import Lottie from "lottie-react";
 import React from "react";
 import animation from "@/asset/loading.json";
 
-const Loading = () => {
+const Loader = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
       <div className="w-64 h-64">
@@ -13,4 +13,4 @@ const Loading = () => {
   );
 };
 
-export default Loading;
+export default Loader;

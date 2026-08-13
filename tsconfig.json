@@ -32,7 +32,8 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.js",
-    "**/*.jsx"
+    "**/*.jsx",
+    "src/Components/Loading/Loader.jsx"
   ],
   "exclude": ["node_modules"]
 }

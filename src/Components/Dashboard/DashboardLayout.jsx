@@ -7,7 +7,6 @@ import Image from "next/image";
 
 const DashboardLayout = ({ children }) => {
   const session = useSession();
-  console.log(session);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
@@ -18,7 +17,7 @@ const DashboardLayout = ({ children }) => {
       {/* Main area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="flex items-center justify-between px-4 sm:px-6 h-14 bg-green-100 border-b border-gray-100 shrink-0">
+        <header className="flex items-center justify-between px-4 sm:px-6 h-14 bg-white-100 border-b border-gray-100 shrink-0 shadow-sm">
           {/* Hamburger — mobile only */}
           <button
             onClick={() => setSidebarOpen(true)}
