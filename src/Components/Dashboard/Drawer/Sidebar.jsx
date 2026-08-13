@@ -192,7 +192,6 @@ const Sidebar = ({ onClose, open }) => {
           icon: <FiBarChart2 />,
           label: "Profit & Loss",
         },
-        { to: "/dashboard/reports/tax", icon: <FiPercent />, label: "Tax" },
       ],
     },
     { to: "/dashboard/settings", icon: <FiSettings />, label: "Settings" },
