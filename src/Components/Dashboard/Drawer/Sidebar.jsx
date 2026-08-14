@@ -15,7 +15,6 @@ import {
   FiLogOut,
   FiMapPin,
   FiPackage,
-  FiPercent,
   FiPieChart,
   FiPlusCircle,
   FiPrinter,
@@ -33,11 +32,10 @@ import {
 } from "react-icons/fi";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 
-const Sidebar = ({ onClose, open }) => {
-  const { data } = useSession();
+const Sidebar = ({ onClose, open, session }) => {
   const [openMenus, setOpenMenus] = useState({});
 
   const toggleMenu = (label) => {
@@ -54,45 +52,53 @@ const Sidebar = ({ onClose, open }) => {
   };
   const normalizedPathname = normalizePath(pathname || "/home");
   const NAV_ITEMS = [
-    { to: "/dashboard", icon: <FiHome />, label: "Overview" },
-    {
-      label: "POS",
-      icon: <FiShoppingCart />,
-      children: [
-        { to: "/dashboard/pos", icon: <FiShoppingCart />, label: "Billing" },
-        {
-          to: "/dashboard/pos/orders",
-          icon: <FiClock />,
-          label: "Held Orders",
-        },
-        {
-          to: "/dashboard/pos/receipts",
-          icon: <FiPrinter />,
-          label: "Receipts",
-        },
-      ],
-    },
+    { to: "/dashboard/user", icon: <FiHome />, label: "Overview" },
+    // {
+    //   label: "POS",
+    //   icon: <FiShoppingCart />,
+    //   children: [
+    //     { to: "/dashboard/pos", icon: <FiShoppingCart />, label: "Billing" },
+    //     {
+    //       to: "/dashboard/pos/orders",
+    //       icon: <FiClock />,
+    //       label: "Held Orders",
+    //     },
+    //     {
+    //       to: "/dashboard/pos/receipts",
+    //       icon: <FiPrinter />,
+    //       label: "Receipts",
+    //     },
+    //   ],
+    // },
     {
       label: "Products",
       icon: <FiBox />,
       children: [
-        { to: "/dashboard/products", icon: <FiBox />, label: "All Products" },
         {
-          to: "/dashboard/products/add",
+          to: "/dashboard/user/products",
+          icon: <FiBox />,
+          label: "All Products",
+        },
+        {
+          to: "/dashboard/user/products/add",
           icon: <FiPlusCircle />,
           label: "Add Product",
         },
         {
-          to: "/dashboard/products/categories",
+          to: "/dashboard/user/products/categories",
           icon: <FiGrid />,
           label: "Categories",
         },
-        {
-          to: "/dashboard/products/brands",
-          icon: <FiTag />,
-          label: "Brands",
-        },
-        { to: "/dashboard/products/units", icon: <FiLayers />, label: "Units" },
+        // {
+        //   to: "/dashboard/user/products/brands",
+        //   icon: <FiTag />,
+        //   label: "Brands",
+        // },
+        // {
+        //   to: "/dashboard/user/products/units",
+        //   icon: <FiLayers />,
+        //   label: "Units",
+        // },
       ],
     },
     {
@@ -233,24 +239,20 @@ const Sidebar = ({ onClose, open }) => {
 
         {/* User info */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-black/10">
-          <Image
-            src={
-              data?.user?.image ||
-              "https://ui-avatars.com/api/?name=" +
-                encodeURIComponent(data?.user?.name || "U")
-            }
+          {/* <Image
+            src={session?.data?.user?.image}
             height={20}
             width={20}
             loading="eager"
             alt="avatar"
             className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
-          />
+          /> */}
           <div className="overflow-hidden">
             <p className="text-sm font-semibold truncate text-gray-600">
-              {data?.user?.name || "User"}
+              {/* {session?.data?.user?.name || "User"} */}
             </p>
             <p className="text-xs text-black/60 truncate">
-              {data?.user?.email}
+              {/* {session?.data?.user?.email} */}
             </p>
           </div>
         </div>

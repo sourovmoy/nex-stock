@@ -5,12 +5,9 @@ import React from "react";
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
-  console.log(session);
-
   if (!session) redirect("/login");
 
   const role = session?.user?.role;
-  console.log(role);
 
   if (role === "member") redirect("/dashboard/user");
   if (role === "admin") redirect("/dashboard/admin");
