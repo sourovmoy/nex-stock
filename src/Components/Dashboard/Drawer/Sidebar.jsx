@@ -54,23 +54,28 @@ const Sidebar = ({ onClose, open, session }) => {
   const normalizedPathname = normalizePath(pathname || "/home");
   const NAV_ITEMS = [
     { to: "/dashboard/user", icon: <FiHome />, label: "Overview" },
-    // {
-    //   label: "POS",
-    //   icon: <FiShoppingCart />,
-    //   children: [
-    //     { to: "/dashboard/pos", icon: <FiShoppingCart />, label: "Billing" },
-    //     {
-    //       to: "/dashboard/pos/orders",
-    //       icon: <FiClock />,
-    //       label: "Held Orders",
-    //     },
-    //     {
-    //       to: "/dashboard/pos/receipts",
-    //       icon: <FiPrinter />,
-    //       label: "Receipts",
-    //     },
-    //   ],
-    // },
+
+    {
+      label: "POS",
+      icon: <FiShoppingCart />,
+      children: [
+        {
+          to: "/dashboard/user/pos",
+          icon: <FiShoppingCart />,
+          label: "Billing",
+        },
+        // {
+        //   to: "/dashboard/pos/orders",
+        //   icon: <FiClock />,
+        //   label: "Held Orders",
+        // },
+        // {
+        //   to: "/dashboard/pos/receipts",
+        //   icon: <FiPrinter />,
+        //   label: "Receipts",
+        // },
+      ],
+    },
     {
       label: "Products",
       icon: <FiBox />,
@@ -133,75 +138,75 @@ const Sidebar = ({ onClose, open, session }) => {
         },
       ],
     },
-    {
-      label: "Purchases",
-      icon: <FiTruck />,
-      children: [
-        {
-          to: "/dashboard/purchases",
-          icon: <FiTruck />,
-          label: "All Purchases",
-        },
-        {
-          to: "/dashboard/purchases/add",
-          icon: <FiPlusCircle />,
-          label: "New Purchase",
-        },
-        {
-          to: "/dashboard/purchases/returns",
-          icon: <FiRotateCcw />,
-          label: "Returns",
-        },
-      ],
-    },
+    // {
+    //   label: "Purchases",
+    //   icon: <FiTruck />,
+    //   children: [
+    //     {
+    //       to: "/dashboard/user/purchases",
+    //       icon: <FiTruck />,
+    //       label: "All Purchases",
+    //     },
+    //     {
+    //       to: "/dashboard/user/purchases/add",
+    //       icon: <FiPlusCircle />,
+    //       label: "New Purchase",
+    //     },
+    //     {
+    //       to: "/dashboard/user/purchases/returns",
+    //       icon: <FiRotateCcw />,
+    //       label: "Returns",
+    //     },
+    //   ],
+    // },
     {
       label: "Sales",
       icon: <FiShoppingBag />,
       children: [
         {
-          to: "/dashboard/sales",
+          to: "/dashboard/user/sales",
           icon: <FiShoppingBag />,
           label: "Sales History",
         },
+        // {
+        //   to: "/dashboard/user/sales/returns",
+        //   icon: <FiRotateCcw />,
+        //   label: "Customer Returns",
+        // },
         {
-          to: "/dashboard/sales/returns",
-          icon: <FiRotateCcw />,
-          label: "Customer Returns",
-        },
-        {
-          to: "/dashboard/sales/invoices",
+          to: "/dashboard/user/sales/invoices",
           icon: <FiFileText />,
           label: "Invoices",
         },
       ],
     },
-    { to: "/dashboard/suppliers", icon: <FiTruck />, label: "Suppliers" },
-    { to: "/dashboard/customers", icon: <FiUsers />, label: "Customers" },
-    { to: "/dashboard/branches", icon: <FiMapPin />, label: "Branches" },
-    { to: "/dashboard/employees", icon: <FiUser />, label: "Employees" },
-    { to: "/dashboard/expenses", icon: <FiCreditCard />, label: "Expenses" },
-    {
-      label: "Reports",
-      icon: <FiPieChart />,
-      children: [
-        {
-          to: "/dashboard/reports/sales",
-          icon: <FiTrendingUp />,
-          label: "Sales Report",
-        },
-        {
-          to: "/dashboard/reports/stock",
-          icon: <FiPieChart />,
-          label: "Stock Report",
-        },
-        {
-          to: "/dashboard/reports/profit-loss",
-          icon: <FiBarChart2 />,
-          label: "Profit & Loss",
-        },
-      ],
-    },
-    { to: "/dashboard/settings", icon: <FiSettings />, label: "Settings" },
+    // { to: "/dashboard/suppliers", icon: <FiTruck />, label: "Suppliers" },
+    { to: "/dashboard/user/customers", icon: <FiUsers />, label: "Customers" },
+    // { to: "/dashboard/branches", icon: <FiMapPin />, label: "Branches" },
+    // { to: "/dashboard/employees", icon: <FiUser />, label: "Employees" },
+    // { to: "/dashboard/expenses", icon: <FiCreditCard />, label: "Expenses" },
+    // {
+    //   label: "Reports",
+    //   icon: <FiPieChart />,
+    //   children: [
+    //     {
+    //       to: "/dashboard/reports/sales",
+    //       icon: <FiTrendingUp />,
+    //       label: "Sales Report",
+    //     },
+    //     {
+    //       to: "/dashboard/reports/stock",
+    //       icon: <FiPieChart />,
+    //       label: "Stock Report",
+    //     },
+    //     {
+    //       to: "/dashboard/reports/profit-loss",
+    //       icon: <FiBarChart2 />,
+    //       label: "Profit & Loss",
+    //     },
+    //   ],
+    // },
+    // { to: "/dashboard/settings", icon: <FiSettings />, label: "Settings" },
   ];
 
   return (
@@ -225,8 +230,8 @@ const Sidebar = ({ onClose, open, session }) => {
         `}
       >
         {/* Logo + close */}
-        <div className="py-1">
-          <Logo />
+        <div className="py-2">
+          <Logo height={64} width={64} />
         </div>
         <div className="flex items-center justify-between border-b border-black/10 ">
           <button
@@ -241,7 +246,7 @@ const Sidebar = ({ onClose, open, session }) => {
         {/* User info */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-black/10">
           <Image
-            src={session?.data?.user?.image || <FaUser />}
+            src={session?.data?.user?.image || "/avater.jpg"}
             height={20}
             width={20}
             loading="eager"
