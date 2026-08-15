@@ -34,6 +34,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
+import { FaUser } from "react-icons/fa";
 
 const Sidebar = ({ onClose, open, session }) => {
   const [openMenus, setOpenMenus] = useState({});
@@ -48,7 +49,7 @@ const Sidebar = ({ onClose, open, session }) => {
   const pathname = usePathname();
   const normalizePath = (path) => {
     if (!path) return "/home";
-    return path.length > 1 && path.endsWith("/") ? path.slice(0, 1) : path;
+    return path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
   };
   const normalizedPathname = normalizePath(pathname || "/home");
   const NAV_ITEMS = [
@@ -106,27 +107,27 @@ const Sidebar = ({ onClose, open, session }) => {
       icon: <FiPackage />,
       children: [
         {
-          to: "/dashboard/stock",
+          to: "/dashboard/user/stock",
           icon: <FiPackage />,
           label: "Stock Overview",
         },
+        // {
+        //   to: "/dashboard/stock/adjustment",
+        //   icon: <FiSettings />,
+        //   label: "Adjustment",
+        // },
+        // {
+        //   to: "/dashboard/stock/transfer",
+        //   icon: <FiRepeat />,
+        //   label: "Transfer",
+        // },
+        // {
+        //   to: "/dashboard/stock/low-stock",
+        //   icon: <FiAlertTriangle />,
+        //   label: "Low Stock",
+        // },
         {
-          to: "/dashboard/stock/adjustment",
-          icon: <FiSettings />,
-          label: "Adjustment",
-        },
-        {
-          to: "/dashboard/stock/transfer",
-          icon: <FiRepeat />,
-          label: "Transfer",
-        },
-        {
-          to: "/dashboard/stock/low-stock",
-          icon: <FiAlertTriangle />,
-          label: "Low Stock",
-        },
-        {
-          to: "/dashboard/stock/history",
+          to: "/dashboard/user/stock/history",
           icon: <FiClock />,
           label: "History",
         },
@@ -239,20 +240,20 @@ const Sidebar = ({ onClose, open, session }) => {
 
         {/* User info */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-black/10">
-          {/* <Image
-            src={session?.data?.user?.image}
+          <Image
+            src={session?.data?.user?.image || <FaUser />}
             height={20}
             width={20}
             loading="eager"
             alt="avatar"
             className="w-10 h-10 rounded-full object-cover border-2 border-white/20"
-          /> */}
+          />
           <div className="overflow-hidden">
             <p className="text-sm font-semibold truncate text-gray-600">
-              {/* {session?.data?.user?.name || "User"} */}
+              {session?.data?.user?.name || "User"}
             </p>
             <p className="text-xs text-black/60 truncate">
-              {/* {session?.data?.user?.email} */}
+              {session?.data?.user?.email}
             </p>
           </div>
         </div>
