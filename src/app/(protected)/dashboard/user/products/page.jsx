@@ -33,7 +33,7 @@ const ProductsListPage = () => {
         <h1 className="text-xl font-semibold text-black/80">All Products</h1>
         <Link
           href="/dashboard/user/products/add"
-          className="flex items-center gap-2 bg-black text-white text-sm px-4 py-2 rounded-lg"
+          className="flex items-center gap-2 bg-blue-400 text-white text-sm px-4 py-2 rounded-lg"
         >
           <FiPlusCircle /> Add Product
         </Link>

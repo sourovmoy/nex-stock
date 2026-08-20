@@ -206,7 +206,7 @@ const Sidebar = ({ onClose, open, session }) => {
     //     },
     //   ],
     // },
-    // { to: "/dashboard/settings", icon: <FiSettings />, label: "Settings" },
+    { to: "/dashboard/user/setting", icon: <FiSettings />, label: "Settings" },
   ];
 
   return (

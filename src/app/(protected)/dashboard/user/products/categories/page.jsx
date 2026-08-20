@@ -48,7 +48,7 @@ const CategoriesPage = () => {
           placeholder="নতুন category নাম"
           className="flex-1 px-3 py-2 border border-black/10 rounded-lg text-sm"
         />
-        <button className="flex items-center gap-1 bg-black text-white text-sm px-4 py-2 rounded-lg">
+        <button className="flex items-center gap-1 bg-blue-400 text-white text-sm px-4 py-2 rounded-lg">
           <FiPlus /> Add
         </button>
       </form>

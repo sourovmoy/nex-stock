@@ -131,7 +131,7 @@ const AddProductPage = () => {
         <button
           type="submit"
           disabled={saving}
-          className="bg-black text-white text-sm px-5 py-2.5 rounded-lg disabled:opacity-50"
+          className="bg-blue-400 text-white text-sm px-5 py-2.5 rounded-lg disabled:opacity-50"
         >
           {saving ? "Saving..." : "Save Product"}
         </button>
