@@ -113,7 +113,11 @@ const RegisterForm = () => {
             type="submit"
             className="w-full bg-gray-600 text-white py-2 rounded hover:bg-green-700 transition"
           >
-            {saving ? <FaSpinner className="animate-accordion-up" /> : Register}
+            {saving ? (
+              <FaSpinner className="animate-accordion-up" />
+            ) : (
+              "Register"
+            )}
           </button>
         </form>
       </div>
