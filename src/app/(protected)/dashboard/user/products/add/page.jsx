@@ -1,7 +1,7 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { addProducts } from "@/lib/products";
 
 const AddProductPage = () => {
   const router = useRouter();
@@ -16,10 +16,21 @@ const AddProductPage = () => {
     const costPrice = e.target.costPrice.value;
     const sellPrice = e.target.sellPrice.value;
     const stockQuantity = e.target.stockQuantity.value;
-    console.log(name, sku, categoryId, sellPrice, costPrice, stockQuantity);
-    setTimeout(() => {
+    const newProducts = {
+      name,
+      sku,
+      categoryId,
+      costPrice,
+      sellPrice,
+      stockQuantity,
+    };
+    try {
+      const res = await addProducts(newProducts);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
       setSaving(false);
-    }, 5000);
+    }
   };
 
   return (
