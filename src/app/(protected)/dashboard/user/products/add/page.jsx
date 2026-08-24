@@ -1,48 +1,25 @@
 "use client";
-// Route: /dashboard/user/products/add (Add Product)
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const AddProductPage = () => {
   const router = useRouter();
-  const [categories, setCategories] = useState([]);
-  const [form, setForm] = useState({
-    name: "",
-    sku: "",
-    categoryId: "",
-    unit: "pcs",
-    costPrice: "",
-    sellPrice: "",
-    stockQuantity: "",
-    lowStockAlert: 5,
-  });
   const [saving, setSaving] = useState(false);
 
-  // useEffect(() => {
-  //   // API route: GET /api/user/categories
-  //   const fetchCategories = async () => {
-  //     const res = await fetch("/api/user/categories");
-  //     setCategories(await res.json());
-  //   };
-  //   fetchCategories();
-  // }, []);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
     setSaving(true);
-    // API route: POST /api/user/products
-    // const res = await fetch("/api/user/products", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(form),
-    // });
-    setSaving(false);
-    // if (res.ok) router.push("/dashboard/user/products");
+    e.preventDefault();
+    const name = e.target.name.value;
+    const sku = e.target.sku.value;
+    const categoryId = e.target.categoryId.value;
+    const costPrice = e.target.costPrice.value;
+    const sellPrice = e.target.sellPrice.value;
+    const stockQuantity = e.target.stockQuantity.value;
+    console.log(name, sku, categoryId, sellPrice, costPrice, stockQuantity);
+    setTimeout(() => {
+      setSaving(false);
+    }, 5000);
   };
 
   return (
@@ -57,8 +34,6 @@ const AddProductPage = () => {
           <label className="text-xs text-black/50">Product Name</label>
           <input
             name="name"
-            value={form.name}
-            onChange={handleChange}
             required
             className="w-full mt-1 px-3 py-2 border border-black/10 rounded-lg text-sm"
           />
@@ -69,8 +44,6 @@ const AddProductPage = () => {
             <label className="text-xs text-black/50">SKU / Code</label>
             <input
               name="sku"
-              value={form.sku}
-              onChange={handleChange}
               className="w-full mt-1 px-3 py-2 border border-black/10 rounded-lg text-sm"
             />
           </div>
@@ -78,16 +51,16 @@ const AddProductPage = () => {
             <label className="text-xs text-black/50">Category</label>
             <select
               name="categoryId"
-              value={form.categoryId}
-              onChange={handleChange}
+              // value={form.categoryId}
+              // onChange={handleChange}
               className="w-full mt-1 px-3 py-2 border border-black/10 rounded-lg text-sm"
             >
               <option value="">Select category</option>
-              {categories.map((c) => (
+              {/* {categories.map((c) => (
                 <option key={c._id} value={c._id}>
                   {c.name}
                 </option>
-              ))}
+              ))} */}
             </select>
           </div>
         </div>
@@ -98,8 +71,6 @@ const AddProductPage = () => {
             <input
               type="number"
               name="costPrice"
-              value={form.costPrice}
-              onChange={handleChange}
               required
               className="w-full mt-1 px-3 py-2 border border-black/10 rounded-lg text-sm"
             />
@@ -109,8 +80,6 @@ const AddProductPage = () => {
             <input
               type="number"
               name="sellPrice"
-              value={form.sellPrice}
-              onChange={handleChange}
               required
               className="w-full mt-1 px-3 py-2 border border-black/10 rounded-lg text-sm"
             />
@@ -120,8 +89,6 @@ const AddProductPage = () => {
             <input
               type="number"
               name="stockQuantity"
-              value={form.stockQuantity}
-              onChange={handleChange}
               required
               className="w-full mt-1 px-3 py-2 border border-black/10 rounded-lg text-sm"
             />

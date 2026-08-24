@@ -2,9 +2,13 @@
 import { postUser } from "@/lib/auth";
 import Container from "../Container/Container";
 import Swal from "sweetalert2";
+import { useState } from "react";
+import { FaSpinner } from "react-icons/fa";
 
 const RegisterForm = () => {
+  const [saving, setSaving] = useState(false);
   const handleSubmit = async (e) => {
+    setSaving(true);
     e.preventDefault();
     try {
       const form = e.target;
@@ -30,6 +34,8 @@ const RegisterForm = () => {
         icon: "warning",
         draggable: true,
       });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -107,7 +113,7 @@ const RegisterForm = () => {
             type="submit"
             className="w-full bg-gray-600 text-white py-2 rounded hover:bg-green-700 transition"
           >
-            Register
+            {saving ? <FaSpinner className="animate-accordion-up" /> : Register}
           </button>
         </form>
       </div>

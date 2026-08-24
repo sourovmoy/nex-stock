@@ -229,11 +229,7 @@ const Sidebar = ({ onClose, open, session }) => {
           lg:translate-x-0 lg:static lg:z-auto
         `}
       >
-        {/* Logo + close */}
-        <div className="py-2">
-          <Logo height={64} width={64} />
-        </div>
-        <div className="flex items-center justify-between border-b border-black/10 ">
+        <div className="flex items-center justify-end mt-3 px-5 ">
           <button
             onClick={onClose}
             className="lg:hidden text-black/70 hover:text-black transition-colors"
@@ -241,6 +237,10 @@ const Sidebar = ({ onClose, open, session }) => {
           >
             <FiX size={20} />
           </button>
+        </div>
+        {/* Logo + close */}
+        <div className="py-2">
+          <Logo height={64} width={64} />
         </div>
 
         {/* User info */}
