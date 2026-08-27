@@ -26,6 +26,7 @@ const AddProductPage = () => {
     };
     try {
       const res = await addProducts(newProducts);
+      console.log(res);
     } catch (error) {
       console.log(error.message);
     } finally {
