@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiPlusCircle, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { deleteProduct, getProducts } from "@/lib/products";
+import Swal from "sweetalert2";
 
 const LOW_STOCK_THRESHOLD = 10; // 🔑 তোমার আগের structure তে lowStockAlert ফিল্ড ছিল, এখন নেই — তাই একটা fixed threshold ব্যবহার করছি
 
@@ -11,6 +12,7 @@ const ProductsListPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const [refetch, setRefetch] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -25,10 +27,10 @@ const ProductsListPage = () => {
       setLoading(false);
     };
     fetchProducts();
-  }, []);
+  }, [refetch]);
 
   const handleDelete = async (category, id) => {
-    Swal.fire({
+    const result = await Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
@@ -36,20 +38,23 @@ const ProductsListPage = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed)
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success",
-        });
     });
+    if (!result.isConfirmed) return;
+    try {
+      const res = await deleteProduct(category, id);
 
-    const res = await deleteProduct(category, id);
-
-    if (!res.success) {
-      setProducts(previousProducts);
-      alert(res.message || "Delete করতে সমস্যা হয়েছে");
+      Swal.fire({
+        title: "Deleted!",
+        text: `${res.message}`,
+        icon: "success",
+      });
+      setRefetch(!refetch);
+    } catch (error) {
+      Swal.fire({
+        title: "Deleted!",
+        text: `${error.message}`,
+        icon: "success",
+      });
     }
   };
 
@@ -135,12 +140,12 @@ const ProductsListPage = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right space-x-2">
-                      <Link
+                      {/* <Link
                         href={`/dashboard/user/products/edit/${p._id}`}
                         className="text-black/50 hover:text-black inline-block"
                       >
                         <FiEdit2 size={15} />
-                      </Link>
+                      </Link> */}
                       <button
                         onClick={() => handleDelete(p.category, p._id)}
                         className="text-red-500 hover:text-red-700"
