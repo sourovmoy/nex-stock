@@ -114,7 +114,7 @@ const ProductsListPage = () => {
                   <tr key={p._id} className="border-t border-black/5">
                     <td className="px-4 py-3">{p.name}</td>
                     <td className="px-4 py-3">{p.category}</td>
-                    <td className="px-4 py-3">৳ {p.sellPrice}</td>
+                    <td className="py-3">৳ {p.sellPrice}</td>
                     <td className="px-4 py-3">
                       <span
                         className={isLowStock ? "text-red-500 font-medium" : ""}
@@ -122,7 +122,7 @@ const ProductsListPage = () => {
                         {p.stockQuantity}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="py-3">
                       <span
                         className={`text-xs px-2 py-1 rounded-full ${
                           isOutOfStock

@@ -61,7 +61,7 @@ const DashboardLayout = ({ children }) => {
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-2 sm:p-4">{children}</main>
+        <main className="flex-1 overflow-y-auto p-3 sm:p-4">{children}</main>
       </div>
     </div>
   );
