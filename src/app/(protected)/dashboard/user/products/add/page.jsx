@@ -1,11 +1,49 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { addProducts } from "@/lib/products";
+import { addProducts, getCategory } from "@/lib/products";
+import Swal from "sweetalert2";
 
 const AddProductPage = () => {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategory();
+        setCategories(data || []);
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const filteredCategories = categories.filter((c) =>
+    c.name.toLowerCase().includes(inputValue.toLowerCase()),
+  );
+
+  const handleSelectCategory = (categoryName) => {
+    setInputValue(categoryName);
+    setShowSuggestions(false);
+  };
 
   const handleSubmit = async (e) => {
     setSaving(true);
@@ -13,9 +51,9 @@ const AddProductPage = () => {
     const name = e.target.name.value;
     const sku = e.target.sku.value;
     const categoryId = e.target.categoryId.value;
-    const costPrice = e.target.costPrice.value;
-    const sellPrice = e.target.sellPrice.value;
-    const stockQuantity = e.target.stockQuantity.value;
+    const costPrice = Number(e.target.costPrice.value);
+    const sellPrice = Number(e.target.sellPrice.value);
+    const stockQuantity = Number(e.target.stockQuantity.value);
     const newProducts = {
       name,
       sku,
@@ -26,9 +64,25 @@ const AddProductPage = () => {
     };
     try {
       const res = await addProducts(newProducts);
-      console.log(res);
+      if (res.success) {
+        e.target.reset();
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: `${res.message}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        Swal.fire({
+          position: "top-end",
+          icon: "warning",
+          title: `${res.message}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
     } catch (error) {
-      console.log(error.message);
     } finally {
       setSaving(false);
     }
@@ -56,24 +110,52 @@ const AddProductPage = () => {
             <label className="text-xs text-black/50">SKU / Code</label>
             <input
               name="sku"
+              required
               className="w-full mt-1 px-3 py-2 border border-black/10 rounded-lg text-sm"
             />
           </div>
-          <div>
+          <div className="relative" ref={wrapperRef}>
             <label className="text-xs text-black/50">Category</label>
-            <select
+            <input
+              type="text"
               name="categoryId"
-              // value={form.categoryId}
-              // onChange={handleChange}
-              className="w-full mt-1 px-3 py-2 border border-black/10 rounded-lg text-sm"
-            >
-              <option value="">Select category</option>
-              {/* {categories.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))} */}
-            </select>
+              value={inputValue}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
+              placeholder={
+                loading ? "Loading categories..." : "Select Category"
+              }
+              autoComplete="off"
+              required
+              disabled={loading}
+              className="w-full mt-1 px-3 py-2 border border-black/10 rounded-lg text-sm disabled:opacity-50"
+            />
+
+            {showSuggestions && filteredCategories.length > 0 && (
+              <ul className="absolute z-10 w-full mt-1 bg-white border border-black/10 rounded-lg shadow-md max-h-48 overflow-y-auto">
+                {filteredCategories.map((c) => (
+                  <li
+                    key={c._id}
+                    onClick={() => handleSelectCategory(c.name)}
+                    className="px-3 py-2 text-sm hover:bg-black/5 cursor-pointer"
+                  >
+                    {c.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {showSuggestions &&
+              inputValue &&
+              filteredCategories.length === 0 &&
+              !loading && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-black/10 rounded-lg shadow-md px-3 py-2 text-sm text-black/50">
+                  &quot;{inputValue}&quot; Added as a new category
+                </div>
+              )}
           </div>
         </div>
 

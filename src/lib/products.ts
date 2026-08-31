@@ -45,6 +45,15 @@ export const addProducts = async (products: ProductsType) => {
       stockQuantity: products.stockQuantity,
       addedAt: now,
       updatedAt: now,
+      priceHistory: [
+        {
+          lastCostPrice: products.costPrice,
+          lastSellPrice: products.sellPrice,
+          lastStock: products.stockQuantity,
+          newStock: products.stockQuantity,
+          addedAt: now,
+        },
+      ],
     };
 
     if (!userDoc) {
@@ -53,7 +62,7 @@ export const addProducts = async (products: ProductsType) => {
         image,
         categories: [
           {
-            category: categoryName, // 🔧 হার্ডকোড না, আসল category name
+            category: categoryName,
             products: [newProduct],
           },
         ],
@@ -64,16 +73,14 @@ export const addProducts = async (products: ProductsType) => {
       return {
         success: true,
         message: "Product added successfully",
-        insertedId: result.insertedId.toString(), // 🔧 ObjectId → plain string
+        insertedId: result.insertedId.toString(),
       };
     }
 
-    // ---------- কেস ২: user document আছে, এই category আছে কিনা দেখো ----------
     const categoryEntry = userDoc.categories?.find(
       (c: any) => c.category.toLowerCase() === categoryName.toLowerCase(),
     );
 
-    // কেস ২.১: category নেই → নতুন category push করো
     if (!categoryEntry) {
       await productsCollection.updateOne(
         { email },
@@ -96,31 +103,54 @@ export const addProducts = async (products: ProductsType) => {
     );
 
     if (existingProduct) {
-      // ✅ আগে থেকে থাকলে → nested product UPDATE করো
-      await productsCollection.updateOne(
-        { email },
-        {
-          $set: {
-            "categories.$[cat].products.$[prod].name": products.name,
-            "categories.$[cat].products.$[prod].costPrice": products.costPrice,
-            "categories.$[cat].products.$[prod].sellPrice": products.sellPrice,
-            "categories.$[cat].products.$[prod].stockQuantity":
-              products.stockQuantity,
-            "categories.$[cat].products.$[prod].updatedAt": now,
-            updatedAt: now,
-          },
-        },
-        {
-          arrayFilters: [
-            { "cat.category": categoryEntry.category },
-            { "prod._id": existingProduct._id },
-          ],
-        },
-      );
+      const priceChanged =
+        existingProduct.costPrice !== products.costPrice ||
+        existingProduct.sellPrice !== products.sellPrice;
 
-      return { success: true, message: "Product updated successfully" };
+      const newStockQuantity =
+        existingProduct.stockQuantity + Number(products.stockQuantity);
+
+      const updateFields: Record<string, any> = {
+        "categories.$[cat].products.$[prod].name": products.name,
+        "categories.$[cat].products.$[prod].stockQuantity": newStockQuantity,
+        "categories.$[cat].products.$[prod].updatedAt": now,
+        updatedAt: now,
+      };
+
+      const updateOps: any = { $set: updateFields };
+
+      // দাম বদলালে তবেই price fields + history আপডেট হবে
+      if (priceChanged || newStockQuantity) {
+        updateFields["categories.$[cat].products.$[prod].costPrice"] =
+          products.costPrice;
+        updateFields["categories.$[cat].products.$[prod].sellPrice"] =
+          products.sellPrice;
+
+        updateOps.$push = {
+          "categories.$[cat].products.$[prod].priceHistory": {
+            lastCostPrice: products.costPrice,
+            lastSellPrice: products.sellPrice,
+            lastStock: products.stockQuantity,
+            newStock: products.stockQuantity,
+            addedAt: now,
+          },
+        };
+      }
+
+      // আগে থেকে থাকলে → nested product UPDATE করো
+      await productsCollection.updateOne({ email }, updateOps, {
+        arrayFilters: [
+          { "cat.category": categoryEntry.category },
+          { "prod._id": existingProduct._id },
+        ],
+      });
+
+      return {
+        success: true,
+        message: "Product updated successfully",
+      };
     } else {
-      // ✅ category আছে কিন্তু SKU নতুন → সেই category এর products array তে push করো
+      // category আছে কিন্তু SKU নতুন → সেই category এর products array তে push করো
       await productsCollection.updateOne(
         { email, "categories.category": categoryEntry.category },
         {
@@ -138,5 +168,106 @@ export const addProducts = async (products: ProductsType) => {
       success: false,
       message: "Something went wrong while adding the product",
     };
+  }
+};
+
+export const getCategory = async () => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return [];
+    }
+    const { email } = session.user;
+    const productsCollection = await dbConnect(collections.PRODUCTS);
+    const userDoc = await productsCollection.findOne({ email });
+    if (!userDoc || !userDoc.categories) {
+      return [];
+    }
+    const categoryNames = userDoc.categories.map((c: any) => ({
+      _id: c.category,
+      name: c.category,
+    }));
+    return categoryNames;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+export const getProducts = async () => {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return { success: false, message: "Unauthorized", products: [] };
+    }
+
+    const { email } = session.user;
+    const productsCollection = await dbConnect(collections.PRODUCTS);
+
+    const userDoc = await productsCollection.findOne({ email });
+
+    if (!userDoc || !userDoc.categories) {
+      return { success: true, products: [] }; // এখনো কোনো product নেই, এটা error না
+    }
+
+    // 🔑 nested structure (categories -> products) কে একটা flat array এ রূপান্তর করা
+    const flatProducts = userDoc.categories.flatMap((cat: any) =>
+      cat.products.map((p: any) => ({
+        _id: p._id.toString(), // ObjectId → string (client এ পাঠানোর জন্য must)
+        name: p.name,
+        sku: p.sku,
+        category: cat.category, // কোন category এর product, সেটা সরাসরি attach করে দেওয়া হলো
+        costPrice: p.costPrice,
+        sellPrice: p.sellPrice,
+        stockQuantity: p.stockQuantity,
+        previousCostPrice: p.previousCostPrice ?? null,
+        previousSellPrice: p.previousSellPrice ?? null,
+        addedAt: p.addedAt ? new Date(p.addedAt).toISOString() : null,
+        updatedAt: p.updatedAt ? new Date(p.updatedAt).toISOString() : null,
+      })),
+    );
+
+    // সবচেয়ে নতুন আপডেট হওয়া product আগে দেখানোর জন্য sort
+    flatProducts.sort(
+      (a, b) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
+
+    return { success: true, products: flatProducts };
+  } catch (error) {
+    console.log(
+      "getProducts error:",
+      error instanceof Error ? error.message : error,
+    );
+    return {
+      success: false,
+      message: "Products লোড করতে সমস্যা হয়েছে",
+      products: [],
+    };
+  }
+};
+
+export const deleteProduct = async (category: string, productId: string) => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return { success: false, message: "Unauthorized" };
+    }
+
+    const { email } = session.user;
+    const productsCollection = await dbConnect(collections.PRODUCTS);
+
+    await productsCollection.updateOne(
+      { email, "categories.category": category },
+      { $pull: { "categories.$.products": { _id: new ObjectId(productId) } } },
+    );
+
+    return { success: true, message: "Product deleted successfully" };
+  } catch (error) {
+    console.log(
+      "deleteProduct error:",
+      error instanceof Error ? error.message : error,
+    );
+    return { success: false, message: "Delete করতে সমস্যা হয়েছে" };
   }
 };

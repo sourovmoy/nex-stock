@@ -1,30 +1,56 @@
 "use client";
-// Route: /dashboard/user/products (All Products)
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FiPlusCircle, FiEdit2, FiTrash2 } from "react-icons/fi";
+import { deleteProduct, getProducts } from "@/lib/products";
+
+const LOW_STOCK_THRESHOLD = 10; // 🔑 তোমার আগের structure তে lowStockAlert ফিল্ড ছিল, এখন নেই — তাই একটা fixed threshold ব্যবহার করছি
 
 const ProductsListPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  // useEffect(() => {
-  //   // API route: GET /api/user/products
-  //   const fetchProducts = async () => {
-  //     const res = await fetch("/api/user/products");
-  //     const data = await res.json();
-  //     setProducts(data);
-  //     setLoading(false);
-  //   };
-  //   fetchProducts();
-  // }, []);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      const res = await getProducts();
 
-  const handleDelete = async (id) => {
-    // if (!confirm("এই product টা delete করতে চান?")) return;
-    // // API route: DELETE /api/user/products/:id
-    // await fetch(`/api/user/products/${id}`, { method: "DELETE" });
-    // setProducts((prev) => prev.filter((p) => p._id !== id));
+      if (res.success) {
+        setProducts(res.products);
+      } else {
+        setErrorMsg(res.message || "Products লোড করতে সমস্যা হয়েছে");
+      }
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
+
+  const handleDelete = async (category, id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed)
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+        });
+    });
+
+    const res = await deleteProduct(category, id);
+
+    if (!res.success) {
+      setProducts(previousProducts);
+      alert(res.message || "Delete করতে সমস্যা হয়েছে");
+    }
   };
 
   return (
@@ -39,6 +65,12 @@ const ProductsListPage = () => {
         </Link>
       </div>
 
+      {errorMsg && (
+        <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+          {errorMsg}
+        </p>
+      )}
+
       <div className="bg-white border border-black/10 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-black/5 text-black/60 text-left">
@@ -52,50 +84,73 @@ const ProductsListPage = () => {
             </tr>
           </thead>
           <tbody>
-            {/* {loading && (
+            {loading && (
               <tr>
                 <td colSpan={6} className="px-4 py-6 text-center text-black/40">
                   Loading...
                 </td>
               </tr>
-            )} */}
-            {/* {!loading &&
-              products.map((p) => (
-                <tr key={p._id} className="border-t border-black/5">
-                  <td className="px-4 py-3">{p.name}</td>
-                  <td className="px-4 py-3">{p.categoryId?.name || "-"}</td>
-                  <td className="px-4 py-3">৳ {p.sellPrice}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={
-                        p.stockQuantity <= p.lowStockAlert
-                          ? "text-red-500 font-medium"
-                          : ""
-                      }
-                    >
-                      {p.stockQuantity}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full ${p.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}
-                    >
-                      {p.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right space-x-2">
-                    <button className="text-black/50 hover:text-black">
-                      <FiEdit2 size={15} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(p._id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <FiTrash2 size={15} />
-                    </button>
-                  </td>
-                </tr>
-              ))} */}
+            )}
+
+            {!loading && products.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-4 py-6 text-center text-black/40">
+                  কোনো product যোগ করা হয়নি
+                </td>
+              </tr>
+            )}
+
+            {!loading &&
+              products.map((p) => {
+                const isLowStock = p.stockQuantity <= LOW_STOCK_THRESHOLD;
+                const isOutOfStock = p.stockQuantity <= 0;
+
+                return (
+                  <tr key={p._id} className="border-t border-black/5">
+                    <td className="px-4 py-3">{p.name}</td>
+                    <td className="px-4 py-3">{p.category}</td>
+                    <td className="px-4 py-3">৳ {p.sellPrice}</td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={isLowStock ? "text-red-500 font-medium" : ""}
+                      >
+                        {p.stockQuantity}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full ${
+                          isOutOfStock
+                            ? "bg-red-100 text-red-600"
+                            : isLowStock
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-green-100 text-green-700"
+                        }`}
+                      >
+                        {isOutOfStock
+                          ? "Out of Stock"
+                          : isLowStock
+                            ? "Low Stock"
+                            : "In Stock"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right space-x-2">
+                      <Link
+                        href={`/dashboard/user/products/edit/${p._id}`}
+                        className="text-black/50 hover:text-black inline-block"
+                      >
+                        <FiEdit2 size={15} />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(p.category, p._id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <FiTrash2 size={15} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>
