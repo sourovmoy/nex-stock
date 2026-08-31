@@ -59,7 +59,7 @@ const ProductsListPage = () => {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-black/80">All Products</h1>
         <Link
@@ -76,7 +76,7 @@ const ProductsListPage = () => {
         </p>
       )}
 
-      <div className="bg-white border border-black/10 rounded-xl overflow-hidden">
+      <div className="bg-white border border-black/10 rounded-xl overflow-scroll">
         <table className="w-full text-sm">
           <thead className="bg-black/5 text-black/60 text-left">
             <tr>

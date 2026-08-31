@@ -89,7 +89,7 @@ const AddProductPage = () => {
   };
 
   return (
-    <div className="p-3">
+    <div className="">
       <h1 className="text-xl font-semibold text-black/80 mb-4">Add Product</h1>
 
       <form
