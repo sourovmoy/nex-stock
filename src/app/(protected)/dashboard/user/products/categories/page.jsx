@@ -1,35 +1,41 @@
 "use client";
-// Route: /dashboard/user/products/categories (Categories)
-
+import { addCategory, getCategory } from "@/lib/products";
 import React, { useEffect, useState } from "react";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
 
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
+  const [fetch, setFetch] = useState(false);
 
-  // useEffect(() => {
-  //   // API route: GET /api/user/categories
-  //   const fetchCategories = async () => {
-  //     const res = await fetch("/api/user/categories");
-  //     setCategories(await res.json());
-  //   };
-  //   fetchCategories();
-  // }, []);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setLoading(true);
+      try {
+        const data = await getCategory();
+        setCategories(data || []);
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleAdd = async (e) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-    // API route: POST /api/user/categories
-    // const res = await fetch("/api/user/categories", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ name }),
-    // });
-    const newCategory = await res.json();
-    setCategories((prev) => [...prev, newCategory]);
-    setName("");
+    try {
+      setLoading(true);
+      e.preventDefault();
+      if (!name.trim()) return;
+      const res = await addCategory(name);
+      
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
+  if (loading) return <p>Loading ....</p>;
 
   const handleDelete = async (id) => {
     // API route: DELETE /api/user/categories/:id
@@ -54,12 +60,15 @@ const CategoriesPage = () => {
       </form>
 
       <div className="bg-white border border-black/10 rounded-xl divide-y divide-black/5">
-        {/* {categories.map((c) => (
+        {categories.map((c, index) => (
           <div
             key={c._id}
             className="flex items-center justify-between px-4 py-3"
           >
-            <span className="text-sm text-black/80">{c.name}</span>
+            <div className="flex gap-10">
+              <span className="text-sm text-black/80">{index + 1}</span>
+              <span className="text-sm text-black/80">{c.name}</span>
+            </div>
             <button
               onClick={() => handleDelete(c._id)}
               className="text-red-500"
@@ -72,7 +81,7 @@ const CategoriesPage = () => {
           <p className="px-4 py-6 text-center text-sm text-black/40">
             কোনো category নেই
           </p>
-        )} */}
+        )}
       </div>
     </div>
   );

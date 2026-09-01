@@ -6,7 +6,7 @@ import { FiPlusCircle, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { deleteProduct, getProducts } from "@/lib/products";
 import Swal from "sweetalert2";
 
-const LOW_STOCK_THRESHOLD = 10; // 🔑 তোমার আগের structure তে lowStockAlert ফিল্ড ছিল, এখন নেই — তাই একটা fixed threshold ব্যবহার করছি
+const LOW_STOCK_THRESHOLD = 10;
 
 const ProductsListPage = () => {
   const [products, setProducts] = useState([]);
@@ -112,10 +112,10 @@ const ProductsListPage = () => {
 
                 return (
                   <tr key={p._id} className="border-t border-black/5">
-                    <td className="px-4 py-3">{p.name}</td>
-                    <td className="px-4 py-3">{p.category}</td>
+                    <td className="px-2 py-3">{p.name}</td>
+                    <td className="px-2 py-3">{p.category}</td>
                     <td className="py-3">৳ {p.sellPrice}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-3">
                       <span
                         className={isLowStock ? "text-red-500 font-medium" : ""}
                       >
@@ -124,7 +124,7 @@ const ProductsListPage = () => {
                     </td>
                     <td className="py-3">
                       <span
-                        className={`text-xs px-2 py-1 rounded-full ${
+                        className={`text-xs px-1 py-1 rounded-full ${
                           isOutOfStock
                             ? "bg-red-100 text-red-600"
                             : isLowStock

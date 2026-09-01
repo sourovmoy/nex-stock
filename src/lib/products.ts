@@ -6,7 +6,7 @@ import { ObjectId } from "mongodb";
 
 type ProductsType = {
   name: string;
-  sku?: string;
+  sku: string;
   categoryId: string;
   costPrice: number;
   sellPrice: number;
@@ -207,16 +207,15 @@ export const getProducts = async () => {
     const userDoc = await productsCollection.findOne({ email });
 
     if (!userDoc || !userDoc.categories) {
-      return { success: true, products: [] }; // এখনো কোনো product নেই, এটা error না
+      return { success: true, products: [] };
     }
 
-    // 🔑 nested structure (categories -> products) কে একটা flat array এ রূপান্তর করা
     const flatProducts = userDoc.categories.flatMap((cat: any) =>
       cat.products.map((p: any) => ({
-        _id: p._id.toString(), // ObjectId → string (client এ পাঠানোর জন্য must)
+        _id: p._id.toString(),
         name: p.name,
         sku: p.sku,
-        category: cat.category, // কোন category এর product, সেটা সরাসরি attach করে দেওয়া হলো
+        category: cat.category,
         costPrice: p.costPrice,
         sellPrice: p.sellPrice,
         stockQuantity: p.stockQuantity,
@@ -227,9 +226,8 @@ export const getProducts = async () => {
       })),
     );
 
-    // সবচেয়ে নতুন আপডেট হওয়া product আগে দেখানোর জন্য sort
     flatProducts.sort(
-      (a, b) =>
+      (a: any, b: any) =>
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
     );
 
@@ -269,5 +267,67 @@ export const deleteProduct = async (category: string, productId: string) => {
       error instanceof Error ? error.message : error,
     );
     return { success: false, message: "Delete করতে সমস্যা হয়েছে" };
+  }
+};
+
+export const addCategory = async (category: string) => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return { success: false, message: "Unauthorized" };
+    }
+
+    const { email } = session.user;
+    const categoryName = category.trim();
+
+    if (!categoryName) {
+      return { success: false, message: "Category name is required" };
+    }
+
+    const productsCollection = await dbConnect(collections.PRODUCTS);
+
+    // 🔑 user এর document আছে কিনা আগে দেখো
+    const userDoc = await productsCollection.findOne({ email });
+
+    // ---------- কেস ১: user এর document একদমই নেই (তার প্রথম category) ----------
+    if (!userDoc) {
+      await productsCollection.insertOne({
+        email,
+        categories: [{ category: categoryName, products: [] }],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      return { success: true, message: "Category added successfully" };
+    }
+
+    // ---------- কেস ২: user document আছে, এই নামে category আগে থেকে আছে কিনা চেক করো ----------
+    const existingCategory = userDoc.categories?.find(
+      (c: any) => c.category.toLowerCase() === categoryName.toLowerCase(),
+    );
+    console.log(existingCategory);
+
+    if (existingCategory) {
+      return { success: false, message: "এই category আগে থেকেই আছে" };
+    }
+
+    // ---------- কেস ৩: category নেই → নতুন category push করো ----------
+    await productsCollection.updateOne(
+      { email },
+      {
+        $push: {
+          categories: { category: categoryName, products: [] },
+        },
+        $set: { updatedAt: new Date() },
+      },
+    );
+
+    return { success: true, message: "Category added successfully" };
+  } catch (error) {
+    console.log(
+      "addCategory error:",
+      error instanceof Error ? error.message : error,
+    );
+    return { success: false, message: "Category add করতে সমস্যা হয়েছে" };
   }
 };
