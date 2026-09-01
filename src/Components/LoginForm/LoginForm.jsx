@@ -33,7 +33,7 @@ const LoginForm = () => {
           timer: 1500,
         });
       } else {
-        router.push("/home");
+        router.push("/dashboard/user");
         router.refresh();
       }
     } catch (err) {

@@ -80,12 +80,12 @@ const ProductsListPage = () => {
         <table className="w-full text-sm">
           <thead className="bg-black/5 text-black/60 text-left">
             <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Category</th>
-              <th className="px-4 py-3">Price</th>
-              <th className="px-4 py-3">Stock</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3 text-right">Action</th>
+              <th className="px-2 py-3">Name</th>
+              <th className="px-2 py-3">Category</th>
+              <th className="px-2 py-3">Price</th>
+              <th className="px-2 py-3">Stock</th>
+              <th className="px-2 py-3">Status</th>
+              <th className="px-2 py-3 text-right">Action</th>
             </tr>
           </thead>
           <tbody>
