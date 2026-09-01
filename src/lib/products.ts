@@ -119,7 +119,6 @@ export const addProducts = async (products: ProductsType) => {
 
       const updateOps: any = { $set: updateFields };
 
-      // দাম বদলালে তবেই price fields + history আপডেট হবে
       if (priceChanged || newStockQuantity) {
         updateFields["categories.$[cat].products.$[prod].costPrice"] =
           products.costPrice;
@@ -150,7 +149,6 @@ export const addProducts = async (products: ProductsType) => {
         message: "Product updated successfully",
       };
     } else {
-      // category আছে কিন্তু SKU নতুন → সেই category এর products array তে push করো
       await productsCollection.updateOne(
         { email, "categories.category": categoryEntry.category },
         {
@@ -239,7 +237,7 @@ export const getProducts = async () => {
     );
     return {
       success: false,
-      message: "Products লোড করতে সমস্যা হয়েছে",
+      message: "There is a problem to load the Products",
       products: [],
     };
   }
@@ -266,7 +264,7 @@ export const deleteProduct = async (category: string, productId: string) => {
       "deleteProduct error:",
       error instanceof Error ? error.message : error,
     );
-    return { success: false, message: "Delete করতে সমস্যা হয়েছে" };
+    return { success: false, message: "There is a problem to Delete" };
   }
 };
 
@@ -286,10 +284,8 @@ export const addCategory = async (category: string) => {
 
     const productsCollection = await dbConnect(collections.PRODUCTS);
 
-    // 🔑 user এর document আছে কিনা আগে দেখো
     const userDoc = await productsCollection.findOne({ email });
 
-    // ---------- কেস ১: user এর document একদমই নেই (তার প্রথম category) ----------
     if (!userDoc) {
       await productsCollection.insertOne({
         email,
@@ -301,17 +297,14 @@ export const addCategory = async (category: string) => {
       return { success: true, message: "Category added successfully" };
     }
 
-    // ---------- কেস ২: user document আছে, এই নামে category আগে থেকে আছে কিনা চেক করো ----------
     const existingCategory = userDoc.categories?.find(
       (c: any) => c.category.toLowerCase() === categoryName.toLowerCase(),
     );
-    console.log(existingCategory);
 
     if (existingCategory) {
-      return { success: false, message: "এই category আগে থেকেই আছে" };
+      return { success: false, message: "The category is already exist" };
     }
 
-    // ---------- কেস ৩: category নেই → নতুন category push করো ----------
     await productsCollection.updateOne(
       { email },
       {
@@ -328,6 +321,65 @@ export const addCategory = async (category: string) => {
       "addCategory error:",
       error instanceof Error ? error.message : error,
     );
-    return { success: false, message: "Category add করতে সমস্যা হয়েছে" };
+    return {
+      success: false,
+      message: "There is a problem to add the Category",
+    };
+  }
+};
+
+export const deleteCategory = async (category: string) => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return { success: false, message: "Unauthorized" };
+    }
+
+    const { email } = session.user;
+    const categoryName = category.trim();
+
+    if (!categoryName) {
+      return { success: false, message: "Category name is required" };
+    }
+
+    const productsCollection = await dbConnect(collections.PRODUCTS);
+    const userDoc = await productsCollection.findOne({ email });
+
+    if (!userDoc) {
+      return {
+        success: false,
+        message: "There is no category named like this",
+      };
+    }
+
+    const categoryEntry = userDoc.categories?.find(
+      (c: any) => c.category.toLowerCase() === categoryName.toLowerCase(),
+    );
+
+    if (!categoryEntry) {
+      return { success: false, message: "Cannot find the category" };
+    }
+
+    await productsCollection.updateOne(
+      { email },
+      {
+        $pull: { categories: { category: categoryEntry.category } },
+        $set: { updatedAt: new Date() },
+      },
+    );
+
+    return {
+      success: true,
+      message: "Category is deleted",
+    };
+  } catch (error) {
+    console.log(
+      "deleteCategory error:",
+      error instanceof Error ? error.message : error,
+    );
+    return {
+      success: false,
+      message: "There is a problem to delete the Category",
+    };
   }
 };
