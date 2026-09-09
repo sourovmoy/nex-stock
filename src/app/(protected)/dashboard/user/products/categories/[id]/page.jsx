@@ -14,7 +14,6 @@ const ParticularCategory = async ({ params }) => {
   const { products, message: errorMsg = "" } =
     await getCategoryProducts(category);
   const res = await getCategoryProducts(category);
-  console.log(res);
 
   return (
     <div className="space-y-4">
