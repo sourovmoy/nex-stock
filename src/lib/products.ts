@@ -12,10 +12,13 @@ type ProductsType = {
   sellPrice: number;
   stockQuantity: number;
 };
+const getUser = async () => {
+  return await getServerSession(authOptions);
+};
 
 export const addProducts = async (products: ProductsType) => {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getUser();
 
     if (!session || !session.user) {
       return {
@@ -171,7 +174,8 @@ export const addProducts = async (products: ProductsType) => {
 
 export const getCategory = async () => {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getUser();
+
     if (!session || !session.user) {
       return [];
     }
@@ -193,7 +197,7 @@ export const getCategory = async () => {
 
 export const getProducts = async () => {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getUser();
 
     if (!session || !session.user) {
       return { success: false, message: "Unauthorized", products: [] };
@@ -245,7 +249,8 @@ export const getProducts = async () => {
 
 export const deleteProduct = async (category: string, productId: string) => {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getUser();
+
     if (!session || !session.user) {
       return { success: false, message: "Unauthorized" };
     }
@@ -270,7 +275,8 @@ export const deleteProduct = async (category: string, productId: string) => {
 
 export const addCategory = async (category: string) => {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getUser();
+
     if (!session || !session.user) {
       return { success: false, message: "Unauthorized" };
     }
@@ -330,7 +336,8 @@ export const addCategory = async (category: string) => {
 
 export const deleteCategory = async (category: string) => {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getUser();
+
     if (!session || !session.user) {
       return { success: false, message: "Unauthorized" };
     }
@@ -381,5 +388,30 @@ export const deleteCategory = async (category: string) => {
       success: false,
       message: "There is a problem to delete the Category",
     };
+  }
+};
+
+export const getCategoryProducts = async (categoryName: string) => {
+  try {
+    const session = await getUser();
+    if (!session || !session.user) {
+      return { success: false, message: "Unauthorized" };
+    }
+    const { email } = session.user;
+    const productsCollection = await dbConnect(collections.PRODUCTS);
+    const userDoc = await productsCollection.findOne({ email });
+    if (!userDoc || !userDoc.categories) {
+      return { success: true, message: "There is no categories", products: [] };
+    }
+    const products = userDoc?.categories.find(
+      (c: any) => c.category.toLowerCase() === categoryName.toLowerCase(),
+    ).products;
+
+    if (!products) {
+      return { success: true, message: "No products available", products: [] };
+    }
+    return { success: true, products };
+  } catch (error) {
+    console.log(error.message);
   }
 };

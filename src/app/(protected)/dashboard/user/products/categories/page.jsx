@@ -2,6 +2,7 @@
 import Loader from "@/Components/Loading/Loader";
 import CategoryPageSkeleton from "@/Components/Skeletons/CategoryPageSkeleton";
 import { addCategory, deleteCategory, getCategory } from "@/lib/products";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
@@ -102,8 +103,9 @@ const CategoriesPage = () => {
       <div className="bg-white border border-black/10 rounded-xl divide-y divide-black/5">
         {!loading &&
           categories.map((c, index) => (
-            <div
-              key={c._id}
+            <Link
+              href={`/dashboard/user/products/categories/${c.name}`}
+              key={index}
               className="flex items-center justify-between px-4 py-3"
             >
               <div className="flex gap-10">
@@ -116,7 +118,7 @@ const CategoriesPage = () => {
               >
                 <FiTrash2 size={15} />
               </button>
-            </div>
+            </Link>
           ))}
 
         {/* খালি অবস্থা — loading শেষ, কিন্তু কোনো category নেই */}
