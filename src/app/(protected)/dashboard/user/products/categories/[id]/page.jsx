@@ -1,5 +1,6 @@
 import { getCategoryProducts } from "@/lib/products";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import React from "react";
 import { FiArrowLeft, FiEdit2, FiTrash2 } from "react-icons/fi";
 
@@ -8,12 +9,13 @@ const LOW_STOCK_THRESHOLD = 10;
 const ParticularCategory = async ({ params }) => {
   const { id } = await params;
   if (!id) {
-    return <div>Invalid Category</div>;
+    notFound();
   }
   const category = decodeURIComponent(id);
-  const { products, message: errorMsg = "" } =
+  const { products = [], message: errorMsg = "" } =
     await getCategoryProducts(category);
-  const res = await getCategoryProducts(category);
+
+  console.log(products);
 
   return (
     <div className="space-y-4">
@@ -35,8 +37,8 @@ const ParticularCategory = async ({ params }) => {
         </p>
       )}
 
-      <div className="bg-white border border-black/10 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white border border-black/10 rounded-xl overflow-auto">
+        <table className="w-full text-sm ">
           <thead className="bg-black/5 text-black/60 text-left">
             <tr>
               <th className="px-4 py-3">#</th>
@@ -89,17 +91,7 @@ const ParticularCategory = async ({ params }) => {
                       {p.stockQuantity}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right space-x-2">
-                    <button className="text-black/50 hover:text-black">
-                      <FiEdit2 size={15} />
-                    </button>
-                    <button
-                      //   onClick={() => handleDelete(p._id)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <FiTrash2 size={15} />
-                    </button>
-                  </td>
+                  <td className="px-4 py-3 text-right space-x-2">aa</td>
                 </tr>
               );
             })}
