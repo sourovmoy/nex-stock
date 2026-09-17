@@ -177,7 +177,7 @@ const BillingPage = ({ initialProducts }) => {
           />
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {filteredProducts.length === 0 && (
             <p className="col-span-full text-sm text-black/40 text-center py-6">
               কোনো product পাওয়া যায়নি
