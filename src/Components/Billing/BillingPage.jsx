@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { FiSearch, FiPlus, FiMinus, FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
-import { createSale } from "@/lib/billing"; // ⚠️ adjust to your actual checkout API
+import { createSale } from "@/lib/billing";
 
 const CART_STORAGE_KEY = "billing-cart";
 
@@ -33,7 +34,9 @@ const loadInitialCart = (products) => {
 };
 
 const BillingPage = ({ initialProducts }) => {
-  const [products] = useState(initialProducts || []);
+  const router = useRouter();
+
+  const [products, setProducts] = useState(initialProducts || []);
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState(() =>
     loadInitialCart(initialProducts || []),
@@ -56,7 +59,7 @@ const BillingPage = ({ initialProducts }) => {
 
   const addToCart = (product) => {
     if (product.stockQuantity <= 0) {
-      Swal.fire({ title: "Stock নেই", icon: "warning" });
+      Swal.fire({ title: "Out of stock", icon: "warning" });
       return;
     }
 
@@ -66,7 +69,7 @@ const BillingPage = ({ initialProducts }) => {
       if (existing) {
         if (existing.quantity >= product.stockQuantity) {
           Swal.fire({
-            title: "Available stock এর বেশি যোগ করা যাবে না",
+            title: "Cannot add more than available stock",
             icon: "warning",
           });
           return prev;
@@ -102,7 +105,7 @@ const BillingPage = ({ initialProducts }) => {
 
           if (nextQuantity > item.stockQuantity) {
             Swal.fire({
-              title: "Available stock এর বেশি যোগ করা যাবে না",
+              title: "Cannot add more than available stock",
               icon: "warning",
             });
             return item;
@@ -110,6 +113,7 @@ const BillingPage = ({ initialProducts }) => {
 
           return { ...item, quantity: nextQuantity };
         })
+
         .filter((item) => item.quantity > 0),
     );
   };
@@ -140,22 +144,38 @@ const BillingPage = ({ initialProducts }) => {
 
         if (res?.success) {
           await Swal.fire({
-            title: "Sale সম্পন্ন হয়েছে!",
-            text: `৳ ${totalAmount} এর বিল তৈরি হয়েছে`,
+            title: "Sale completed!",
+            text: `Bill of ৳ ${totalAmount} created`,
             icon: "success",
           });
+
+          setProducts((prev) =>
+            prev.map((product) => {
+              const soldItem = cart.find(
+                (item) => item.productId === product._id,
+              );
+              if (!soldItem) return product;
+              return {
+                ...product,
+                stockQuantity: product.stockQuantity - soldItem.quantity,
+              };
+            }),
+          );
+
           setCart([]);
           localStorage.removeItem(CART_STORAGE_KEY);
+
+          router.refresh();
         } else {
           Swal.fire({
-            title: "Checkout ব্যর্থ হয়েছে",
-            text: res?.message || "আবার চেষ্টা করুন",
+            title: "Checkout failed",
+            text: res?.message || "Please try again",
             icon: "error",
           });
         }
       } catch (error) {
         Swal.fire({
-          title: "Checkout ব্যর্থ হয়েছে",
+          title: "Checkout failed",
           text: error?.message,
           icon: "error",
         });
@@ -172,33 +192,62 @@ const BillingPage = ({ initialProducts }) => {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Product খুঁজুন..."
+            placeholder="Search product..."
             className="w-full pl-10 pr-3 py-2 rounded-lg border border-black/10 text-sm"
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {filteredProducts.length === 0 && (
-            <p className="col-span-full text-sm text-black/40 text-center py-6">
-              কোনো product পাওয়া যায়নি
-            </p>
-          )}
-
-          {filteredProducts.map((p) => (
-            <button
-              key={p._id}
-              type="button"
-              onClick={() => addToCart(p)}
-              disabled={p.stockQuantity <= 0}
-              className="border border-black/10 rounded-lg p-3 text-left hover:bg-black/5 transition disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              <p className="text-sm font-medium text-black/80">{p.name}</p>
-              <p className="text-xs text-black/50">৳ {p.sellPrice}</p>
-              {p.stockQuantity <= 0 && (
-                <p className="text-[10px] text-red-500 mt-1">Out of stock</p>
+        <div className="border border-black/10 rounded-lg overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-black/5 text-black/60 text-left">
+              <tr>
+                <th className="px-3 py-2">Name</th>
+                <th className="px-3 py-2">Price</th>
+                <th className="px-3 py-2">Stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProducts.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={3}
+                    className="px-3 py-6 text-center text-black/40"
+                  >
+                    No products found
+                  </td>
+                </tr>
               )}
-            </button>
-          ))}
+
+              {filteredProducts.map((p) => {
+                const isOutOfStock = p.stockQuantity <= 0;
+
+                return (
+                  <tr
+                    key={p._id}
+                    onClick={() => !isOutOfStock && addToCart(p)}
+                    className={
+                      isOutOfStock
+                        ? "border-t border-black/5 opacity-40 cursor-not-allowed"
+                        : "border-t border-black/5 cursor-pointer hover:bg-black/5 transition"
+                    }
+                  >
+                    <td className="px-3 py-3">
+                      <p className="font-medium text-black/80">{p.name}</p>
+                      {isOutOfStock && (
+                        <p className="text-[10px] text-red-500 mt-0.5">
+                          Out of stock
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-3 py-3 text-black/70">৳ {p.sellPrice}</td>
+                    <td className="px-3 py-3 font-medium text-black/80">
+                      {p.stockQuantity}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -210,7 +259,7 @@ const BillingPage = ({ initialProducts }) => {
 
         <div className="space-y-2 flex-1 max-h-96 overflow-y-auto">
           {cart.length === 0 && (
-            <p className="text-xs text-black/40">কোনো item যোগ করা হয়নি</p>
+            <p className="text-xs text-black/40">No items added yet</p>
           )}
           {cart.map((item) => (
             <div
