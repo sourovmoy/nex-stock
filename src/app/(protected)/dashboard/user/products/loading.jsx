@@ -1,10 +1,10 @@
 import React from "react";
 
-const loading = () => {
+const AllProductLoading = () => {
   const skeletonRows = Array.from({ length: 20 });
 
   return (
-    <div className="space-y-4 animate-pulse">
+    <div className="space-y-4 animate-pulse overflow-x-scroll">
       <div className="flex items-center justify-between">
         <div className="h-6 w-32 bg-black/10 rounded" />
         <div className="h-9 w-32 bg-black/10 rounded-lg" />
@@ -38,4 +38,4 @@ const loading = () => {
   );
 };
 
-export default loading;
+export default AllProductLoading;

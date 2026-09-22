@@ -173,11 +173,11 @@ const Sidebar = ({ onClose, open, session }) => {
         //   icon: <FiRotateCcw />,
         //   label: "Customer Returns",
         // },
-        {
-          to: "/dashboard/user/sales/invoices",
-          icon: <FiFileText />,
-          label: "Invoices",
-        },
+        // {
+        //   to: "/dashboard/user/sales/invoices",
+        //   icon: <FiFileText />,
+        //   label: "Invoices",
+        // },
       ],
     },
     // { to: "/dashboard/suppliers", icon: <FiTruck />, label: "Suppliers" },

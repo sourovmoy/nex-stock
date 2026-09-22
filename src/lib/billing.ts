@@ -4,16 +4,19 @@ import { authOptions } from "./authOptions";
 import { collections, dbConnect } from "./dbConnect";
 import { ObjectId } from "mongodb";
 
-type SaleItem = {
+type SaleItemInput = {
   productId: string;
   category: string;
+  name: string;
   quantity: number;
   price: number;
 };
 
 type CreateSalePayload = {
-  items: SaleItem[];
-  totalAmount: number;
+  items: SaleItemInput[];
+  discount?: number;
+  paidAmount?: number;
+  customerName?: string;
 };
 
 const getUser = async () => {
@@ -41,8 +44,6 @@ export const createSale = async (payload: CreateSalePayload) => {
       return { success: false, message: "No products found" };
     }
 
-    // চেক আগে করে নেওয়া — কোনো stock কম থাকলে পুরো sale-ই বাতিল হবে,
-    // কিছু item deduct হয়ে কিছু না হওয়ার মতো half-done state হবে না।
     for (const item of payload.items) {
       const categoryEntry = userDoc.categories.find(
         (c: any) => c.category === item.category,
@@ -52,22 +53,18 @@ export const createSale = async (payload: CreateSalePayload) => {
       );
 
       if (!product) {
-        return {
-          success: false,
-          message: `Product খুঁজে পাওয়া যায়নি`,
-        };
+        return { success: false, message: "Product not found" };
       }
       if (product.stockQuantity < item.quantity) {
         return {
           success: false,
-          message: `${product.name} এর পর্যাপ্ত স্টক নেই (আছে ${product.stockQuantity})`,
+          message: `Not enough stock for ${product.name} (available: ${product.stockQuantity})`,
         };
       }
     }
 
     const now = new Date();
 
-    // প্রতিটা item এর জন্য stock কমানো
     for (const item of payload.items) {
       await productsCollection.updateOne(
         { email, "categories.category": item.category },
@@ -89,12 +86,37 @@ export const createSale = async (payload: CreateSalePayload) => {
       );
     }
 
-    // Sale record তৈরি — history/reporting এর জন্য
+    const itemsWithSubtotal = payload.items.map((item) => ({
+      ...item,
+      subtotal: item.price * item.quantity,
+    }));
+    const subtotal = itemsWithSubtotal.reduce(
+      (sum, item) => sum + item.subtotal,
+      0,
+    );
+    const discount = payload.discount ?? 0;
+    const totalAmount = Math.max(subtotal - discount, 0);
+
+    const paidAmount = payload.paidAmount ?? totalAmount;
+    const dueAmount = Math.max(totalAmount - paidAmount, 0);
+    const status = dueAmount > 0 ? "due" : "completed";
+
     const salesCollection = await dbConnect(collections.SALES);
+
+    const salesCount = await salesCollection.countDocuments({ email });
+    const invoiceNo = `INV-${String(salesCount + 1).padStart(4, "0")}`;
+
     const result = await salesCollection.insertOne({
       email,
-      items: payload.items,
-      totalAmount: payload.totalAmount,
+      invoiceNo,
+      customerName: payload.customerName?.trim() || "Walk-in Customer",
+      items: itemsWithSubtotal,
+      subtotal,
+      discount,
+      totalAmount,
+      paidAmount,
+      dueAmount,
+      status,
       createdAt: now,
     });
 
@@ -102,6 +124,7 @@ export const createSale = async (payload: CreateSalePayload) => {
       success: true,
       message: "Sale completed successfully",
       saleId: result.insertedId.toString(),
+      invoiceNo,
     };
   } catch (error) {
     console.log(
@@ -110,7 +133,7 @@ export const createSale = async (payload: CreateSalePayload) => {
     );
     return {
       success: false,
-      message: "Checkout করতে সমস্যা হয়েছে",
+      message: "Something went wrong during checkout",
     };
   }
 };
@@ -135,8 +158,11 @@ export const getSalesHistory = async () => {
       success: true,
       sales: sales.map((s: any) => ({
         _id: s._id.toString(),
-        items: s.items,
+        invoiceNo: s.invoiceNo,
+        customerName: s.customerName || "Walk-in Customer",
         totalAmount: s.totalAmount,
+        dueAmount: s.dueAmount ?? 0,
+        status: s.status || "completed",
         createdAt: s.createdAt ? new Date(s.createdAt).toISOString() : null,
       })),
     };
@@ -147,8 +173,55 @@ export const getSalesHistory = async () => {
     );
     return {
       success: false,
-      message: "Sales history লোড করতে সমস্যা হয়েছে",
+      message: "Failed to load sales history",
       sales: [],
     };
+  }
+};
+
+export const getSaleById = async (saleId: string) => {
+  try {
+    const session = await getUser();
+
+    if (!session || !session.user) {
+      return { success: false, message: "Unauthorized" };
+    }
+
+    const { email } = session.user;
+    const salesCollection = await dbConnect(collections.SALES);
+
+    const sale = await salesCollection.findOne({
+      _id: new ObjectId(saleId),
+      email,
+    });
+
+    if (!sale) {
+      return { success: false, message: "Invoice not found" };
+    }
+
+    return {
+      success: true,
+      sale: {
+        _id: sale._id.toString(),
+        invoiceNo: sale.invoiceNo,
+        customerName: sale.customerName || "Walk-in Customer",
+        items: sale.items,
+        subtotal: sale.subtotal,
+        discount: sale.discount ?? 0,
+        totalAmount: sale.totalAmount,
+        paidAmount: sale.paidAmount,
+        dueAmount: sale.dueAmount ?? 0,
+        status: sale.status || "completed",
+        createdAt: sale.createdAt
+          ? new Date(sale.createdAt).toISOString()
+          : null,
+      },
+    };
+  } catch (error) {
+    console.log(
+      "getSaleById error:",
+      error instanceof Error ? error.message : error,
+    );
+    return { success: false, message: "Failed to load invoice" };
   }
 };

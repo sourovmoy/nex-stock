@@ -4,7 +4,6 @@ import { FiEdit2 } from "react-icons/fi";
 
 const LOW_STOCK_THRESHOLD = 10;
 
-
 const ProductRow = ({ product }) => {
   const isOutOfStock = product.stockQuantity <= 0;
   const isLowStock =
@@ -41,7 +40,7 @@ const ProductRow = ({ product }) => {
               : "In Stock"}
         </span>
       </td>
-      <td className="px-4 py-3 text-right space-x-4">
+      <td className="flex items-center px-4 py-3 text-right space-x-4">
         <Link
           href={`/dashboard/user/products/edit/${product._id}`}
           className="text-black/50 hover:text-black inline-block"

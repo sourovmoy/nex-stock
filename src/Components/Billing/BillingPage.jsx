@@ -4,10 +4,15 @@ import React, { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FiSearch, FiPlus, FiMinus, FiTrash2 } from "react-icons/fi";
 import Swal from "sweetalert2";
-import { createSale } from "@/lib/billing";
+import { createSale } from "@/lib/billing"; // ⚠️ adjust to your actual checkout API
 
 const CART_STORAGE_KEY = "billing-cart";
 
+// Reads and reconciles the saved cart against the current product list
+// (stock may have changed since it was saved). Runs once, synchronously,
+// as the initial state — not inside an effect, so there's no cascading
+// render and (since this component is loaded with ssr: false) no
+// server/client mismatch either.
 const loadInitialCart = (products) => {
   try {
     const raw = localStorage.getItem(CART_STORAGE_KEY);
@@ -35,13 +40,18 @@ const loadInitialCart = (products) => {
 
 const BillingPage = ({ initialProducts }) => {
   const router = useRouter();
-
+  // setProducts added — previously this was just useState(initialProducts),
+  // which meant the UI never updated even after stock dropped post-checkout.
   const [products, setProducts] = useState(initialProducts || []);
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState(() =>
     loadInitialCart(initialProducts || []),
   );
   const [isCheckingOut, startCheckout] = useTransition();
+
+  // useEffect(() => {
+  //   setProducts(initialProducts || []);
+  // }, [initialProducts]);
 
   useEffect(() => {
     try {
@@ -51,6 +61,8 @@ const BillingPage = ({ initialProducts }) => {
     }
   }, [cart]);
 
+  // Client-side filter — products are already on hand from the server,
+  // no need to refetch on every keystroke.
   const filteredProducts = useMemo(() => {
     const term = search.trim().toLowerCase();
     if (!term) return products;
@@ -85,7 +97,7 @@ const BillingPage = ({ initialProducts }) => {
         ...prev,
         {
           productId: product._id,
-          category: product.category,
+          category: product.category, // already comes from getProducts()
           name: product.name,
           price: product.sellPrice,
           quantity: 1,
@@ -136,10 +148,10 @@ const BillingPage = ({ initialProducts }) => {
           items: cart.map((item) => ({
             productId: item.productId,
             category: item.category,
+            name: item.name,
             quantity: item.quantity,
             price: item.price,
           })),
-          totalAmount,
         });
 
         if (res?.success) {
@@ -165,6 +177,8 @@ const BillingPage = ({ initialProducts }) => {
           setCart([]);
           localStorage.removeItem(CART_STORAGE_KEY);
 
+          // Fetch authoritative fresh data from the server — picks up
+          // stock changes made from another tab/device too.
           router.refresh();
         } else {
           Swal.fire({
@@ -227,7 +241,7 @@ const BillingPage = ({ initialProducts }) => {
                     onClick={() => !isOutOfStock && addToCart(p)}
                     className={
                       isOutOfStock
-                        ? "border-t border-black/5 opacity-40 cursor-not-allowed "
+                        ? "border-t border-black/5 opacity-40 cursor-not-allowed"
                         : "border-t border-black/5 cursor-pointer hover:bg-black/5 transition"
                     }
                   >
