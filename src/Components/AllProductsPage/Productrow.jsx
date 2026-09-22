@@ -1,8 +1,10 @@
+import Link from "next/link";
 import DeleteProductButton from "./Deleteproductbutton";
+import { FiEdit2 } from "react-icons/fi";
 
 const LOW_STOCK_THRESHOLD = 10;
 
-// Still a SERVER component — plain markup, no hooks/handlers here.
+
 const ProductRow = ({ product }) => {
   const isOutOfStock = product.stockQuantity <= 0;
   const isLowStock =
@@ -39,10 +41,13 @@ const ProductRow = ({ product }) => {
               : "In Stock"}
         </span>
       </td>
-      <td className="px-4 py-3 text-right space-x-2">
-        {/* <Link href={`/dashboard/user/products/edit/${product._id}`} className="text-black/50 hover:text-black inline-block">
+      <td className="px-4 py-3 text-right space-x-4">
+        <Link
+          href={`/dashboard/user/products/edit/${product._id}`}
+          className="text-black/50 hover:text-black inline-block"
+        >
           <FiEdit2 size={15} />
-        </Link> */}
+        </Link>
         <DeleteProductButton
           category={product.category}
           productId={product._id}

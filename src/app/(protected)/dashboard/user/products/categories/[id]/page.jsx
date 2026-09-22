@@ -1,3 +1,4 @@
+import DeleteProductButton from "@/Components/AllProductsPage/Deleteproductbutton";
 import { getCategoryProducts } from "@/lib/products";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,8 +15,6 @@ const ParticularCategory = async ({ params }) => {
   const category = decodeURIComponent(id);
   const { products = [], message: errorMsg = "" } =
     await getCategoryProducts(category);
-
-  console.log(products);
 
   return (
     <div className="space-y-4">
@@ -91,7 +90,18 @@ const ParticularCategory = async ({ params }) => {
                       {p.stockQuantity}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-right space-x-2">aa</td>
+                  <td className="px-4 py-3 text-right space-x-4">
+                    <Link
+                      href={`/dashboard/user/products/edit/${p._id}`}
+                      className="text-black/50 hover:text-black inline-block"
+                    >
+                      <FiEdit2 size={15} />
+                    </Link>
+                    <DeleteProductButton
+                      category={category}
+                      productId={p._id.toString()}
+                    />
+                  </td>
                 </tr>
               );
             })}

@@ -227,7 +227,7 @@ const BillingPage = ({ initialProducts }) => {
                     onClick={() => !isOutOfStock && addToCart(p)}
                     className={
                       isOutOfStock
-                        ? "border-t border-black/5 opacity-40 cursor-not-allowed"
+                        ? "border-t border-black/5 opacity-40 cursor-not-allowed "
                         : "border-t border-black/5 cursor-pointer hover:bg-black/5 transition"
                     }
                   >
