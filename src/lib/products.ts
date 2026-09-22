@@ -12,6 +12,16 @@ type ProductsType = {
   sellPrice: number;
   stockQuantity: number;
 };
+
+type UpdateProductPayload = {
+  productId: string;
+  category: string;
+  name: string;
+  sku: string;
+  costPrice: number;
+  sellPrice: number;
+  stockQuantity: number;
+};
 const getUser = async () => {
   return await getServerSession(authOptions);
 };
@@ -413,5 +423,127 @@ export const getCategoryProducts = async (categoryName: string) => {
     return { success: true, products };
   } catch (error) {
     console.log(error.message);
+  }
+};
+
+export const getProductById = async (productId: string) => {
+  try {
+    const session = await getUser();
+
+    if (!session || !session.user) {
+      return { success: false, message: "Unauthorized" };
+    }
+
+    const { email } = session.user;
+    const productsCollection = await dbConnect(collections.PRODUCTS);
+    const userDoc = await productsCollection.findOne({ email });
+
+    if (!userDoc || !userDoc.categories) {
+      return { success: false, message: "Product not found" };
+    }
+
+    for (const cat of userDoc.categories) {
+      const found = cat.products.find(
+        (p: any) => p._id.toString() === productId,
+      );
+
+      if (found) {
+        return {
+          success: true,
+          product: {
+            _id: found._id.toString(),
+            name: found.name,
+            sku: found.sku,
+            category: cat.category,
+            costPrice: found.costPrice,
+            sellPrice: found.sellPrice,
+            stockQuantity: found.stockQuantity,
+          },
+        };
+      }
+    }
+
+    return { success: false, message: "Product not found" };
+  } catch (error) {
+    console.log(
+      "getProductById error:",
+      error instanceof Error ? error.message : error,
+    );
+    return { success: false, message: "Failed to load product" };
+  }
+};
+
+export const updateProduct = async (payload: UpdateProductPayload) => {
+  try {
+    const session = await getUser();
+
+    if (!session || !session.user) {
+      return { success: false, message: "Unauthorized" };
+    }
+
+    const { email } = session.user;
+    const productsCollection = await dbConnect(collections.PRODUCTS);
+    const userDoc = await productsCollection.findOne({ email });
+
+    if (!userDoc) {
+      return { success: false, message: "No products found" };
+    }
+
+    const categoryEntry = userDoc.categories?.find(
+      (c: any) => c.category === payload.category,
+    );
+    const existingProduct = categoryEntry?.products.find(
+      (p: any) => p._id.toString() === payload.productId,
+    );
+
+    if (!existingProduct) {
+      return { success: false, message: "Product not found" };
+    }
+
+    const now = new Date();
+    const priceOrStockChanged =
+      existingProduct.costPrice !== payload.costPrice ||
+      existingProduct.sellPrice !== payload.sellPrice ||
+      existingProduct.stockQuantity !== payload.stockQuantity;
+
+    const updateOps: any = {
+      $set: {
+        "categories.$[cat].products.$[prod].name": payload.name,
+        "categories.$[cat].products.$[prod].sku": payload.sku,
+        "categories.$[cat].products.$[prod].costPrice": payload.costPrice,
+        "categories.$[cat].products.$[prod].sellPrice": payload.sellPrice,
+        "categories.$[cat].products.$[prod].stockQuantity":
+          payload.stockQuantity,
+        "categories.$[cat].products.$[prod].updatedAt": now,
+        updatedAt: now,
+      },
+    };
+
+    if (priceOrStockChanged) {
+      updateOps.$push = {
+        "categories.$[cat].products.$[prod].priceHistory": {
+          lastCostPrice: existingProduct.costPrice,
+          lastSellPrice: existingProduct.sellPrice,
+          lastStock: existingProduct.stockQuantity,
+          newStock: payload.stockQuantity,
+          addedAt: now,
+        },
+      };
+    }
+
+    await productsCollection.updateOne({ email }, updateOps, {
+      arrayFilters: [
+        { "cat.category": payload.category },
+        { "prod._id": new ObjectId(payload.productId) },
+      ],
+    });
+
+    return { success: true, message: "Product updated successfully" };
+  } catch (error) {
+    console.log(
+      "updateProduct error:",
+      error instanceof Error ? error.message : error,
+    );
+    return { success: false, message: "Failed to update product" };
   }
 };
